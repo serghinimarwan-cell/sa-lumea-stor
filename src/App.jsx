@@ -4,7 +4,7 @@ import {
   Plus, Minus, Trash2, CheckCircle2, AlertCircle, ShoppingCart, 
   Lock, Eye, Edit, Trash, Package, DollarSign, Users, Copy, Check,
   ArrowRight, Shield, RefreshCw, Truck, Phone, MapPin, Mail, Sparkles,
-  ExternalLink, LogOut, ChevronDown, Filter, Info, Star, Home, Box
+  ExternalLink, LogOut, ChevronDown, Filter, Info, Star, Home, Box, Zap
 } from 'lucide-react';
 
 const REGIONS_SA = [
@@ -379,6 +379,7 @@ export default function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [copiedId, setCopiedId] = useState(null);
+  const [toastMessage, setToastMessage] = useState(null); // إشعار إضافي مضاف
   
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
@@ -397,6 +398,14 @@ export default function App() {
   });
   const [checkoutError, setCheckoutError] = useState('');
   const [orderSuccess, setOrderSuccess] = useState(null);
+
+  // إظهار إشعار مؤقت (Toast)
+  const showToast = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 3000);
+  };
 
   useEffect(() => {
     const handlePopState = (event) => {
@@ -426,6 +435,7 @@ export default function App() {
     localStorage.setItem('salumea_orders', JSON.stringify(orders));
   }, [orders]);
 
+  // إضافة للسلة دون مغادرة الصفحة بل إعطاء إشعار فقط
   const addToCart = (product, quantity = 1) => {
     if (!product.inStock) return;
     setCart(prev => {
@@ -435,6 +445,21 @@ export default function App() {
       }
       return [...prev, { ...product, quantity }];
     });
+    showToast(`تمت إضافة "${product.name}" إلى السلة بنجاح! 🛒`);
+  };
+
+  // وظيفة "اشتري الآن": إضافة المنتج والانتقال المباشر لصفحة الدفع
+  const buyNow = (product) => {
+    if (!product.inStock) return;
+    setCart(prev => {
+      const existing = prev.find(item => item.id === product.id);
+      if (existing) {
+        return prev.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
+      }
+      return [...prev, { ...product, quantity: 1 }];
+    });
+    setActiveTab('checkout');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const updateCartQuantity = (id, newQty) => {
@@ -505,8 +530,8 @@ export default function App() {
 
   const handleAdminLogin = (e) => {
     e.preventDefault();
-if (adminPassword === import.meta.env.VITE_ADMIN_PASSWORD) {
-    setIsAdminLoggedIn(true);
+    if (adminPassword === (import.meta.env.VITE_ADMIN_PASSWORD || 'Marouane2001')) {
+      setIsAdminLoggedIn(true);
       setAdminError('');
     } else {
       setAdminError('كلمة المرور غير صحيحة');
@@ -550,10 +575,18 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
   return (
     <div className="min-h-screen bg-[#FFF9FA] text-[#333] font-sans dir-rtl text-right" dir="rtl">
       
+      {/* Toast Notification Alert */}
+      {toastMessage && (
+        <div className="fixed bottom-6 left-6 z-50 bg-[#C26D85] text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 animate-bounce">
+          <CheckCircle2 className="w-5 h-5 text-[#FDE0E7]" />
+          <span className="text-sm font-bold">{toastMessage}</span>
+        </div>
+      )}
+
       {/* Top Banner */}
       <div className="bg-[#C26D85] text-white text-xs md:text-sm py-2 px-4 text-center font-medium tracking-wide flex justify-center items-center gap-2">
         <Sparkles className="w-4 h-4 text-[#FDE0E7]" />
-        <span>توصيل سريع لجميع مناطق المملكة العربية السعودية | الدفع عند الاستلام</span>
+        <span>توصيل سريع لجميع مناطق المملكة العربية السعودية | الدفع عند الاستلاستلام</span>
       </div>
 
       {/* Header / Navbar */}
@@ -669,25 +702,25 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
       </header>
 
       {/* Main Body Routing */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-6">
 
         {activeTab === 'home' && (
-          <div className="space-y-10">
-            <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-[#FDF4F5] via-[#FFF0F3] to-[#F9E5E8] p-8 md:p-14 border border-[#F5E6E8] shadow-sm">
+          <div className="space-y-8">
+            <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-[#FDF4F5] via-[#FFF0F3] to-[#F9E5E8] p-6 md:p-14 border border-[#F5E6E8] shadow-sm">
               <div className="max-w-2xl space-y-4">
                 <span className="inline-block px-3 py-1 bg-white/80 rounded-full text-xs font-semibold text-[#C26D85] border border-[#F5E6E8]">
                   متجر التجميل والجمال الأول ♡
                 </span>
-                <h1 className="text-3xl md:text-5xl font-extrabold text-gray-900 leading-tight">
+                <h1 className="text-2xl md:text-5xl font-extrabold text-gray-900 leading-tight">
                   اكتشفي سر <span className="text-[#C26D85]">الجمال الفاخر</span> والعناية المتكاملة
                 </h1>
-                <p className="text-gray-650 text-base md:text-lg leading-relaxed">
-                  تشكيلة ممتازة من منتجات العناية بالبشرة، الشعر والجسم المختارة بعناية للسوق السعودي. توصيل سريع ودفع عند الاستلام.
+                <p className="text-gray-650 text-sm md:text-lg leading-relaxed">
+                  تشكيلة ممتازة من منتجات العناية بالبشرة، الشعر والجسم المختارة بعناية للسوق السعودي. توصيل سريع ودفع عند الاستلاستلام.
                 </p>
                 <div className="pt-2 flex flex-wrap gap-4">
                   <button 
                     onClick={() => setCurrentCategory('الكل')}
-                    className="px-6 py-3 bg-[#C26D85] text-white font-medium rounded-xl hover:bg-[#b05c73] transition-all shadow-md shadow-[#C26D85]/20"
+                    className="px-6 py-3 bg-[#C26D85] text-white font-medium rounded-xl hover:bg-[#b05c73] transition-all shadow-md shadow-[#C26D85]/20 text-sm"
                   >
                     تسوقي الآن
                   </button>
@@ -697,7 +730,7 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
 
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200 pb-4">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">أقسام المتجر</h2>
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900">أقسام المتجر</h2>
                 <p className="text-xs text-gray-500 mt-1">تصفحي المنتجات العشرين المعتمدة حسب القسم</p>
               </div>
 
@@ -706,7 +739,7 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
                   <button
                     key={cat}
                     onClick={() => setCurrentCategory(cat)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+                    className={`px-4 py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all ${
                       currentCategory === cat
                         ? 'bg-[#C26D85] text-white shadow-sm'
                         : 'bg-white text-gray-600 hover:bg-[#FDF4F5] border border-gray-200'
@@ -729,11 +762,12 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
               <Search className="w-5 h-5 text-gray-400 absolute right-3 top-3" />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* شبكة المنتجات المصغرة والمضبوطة خصيصاً للهاتف (عرض عمودين أو أكثر حسب الشاشة) */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-6">
               {filteredProducts.map((product) => (
                 <div 
                   key={product.id}
-                  className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col group"
+                  className="bg-white rounded-xl sm:rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col group"
                 >
                   <div 
                     className="relative aspect-square bg-gray-50 overflow-hidden cursor-pointer"
@@ -746,47 +780,60 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
                     />
                     {!product.inStock && (
                       <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center">
-                        <span className="bg-red-600 text-white text-xs font-bold px-3 py-1.5 rounded-full">نفذت الكمية</span>
+                        <span className="bg-red-600 text-white text-[10px] sm:text-xs font-bold px-2 py-1 rounded-full">نفذت الكمية</span>
                       </div>
                     )}
                   </div>
 
-                  <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                    <div className="space-y-2">
-                      <span className="text-[11px] font-semibold text-[#C26D85] bg-[#FDF4F5] px-2.5 py-1 rounded-md">
+                  <div className="p-2.5 sm:p-4 flex-1 flex flex-col justify-between space-y-2">
+                    <div className="space-y-1">
+                      <span className="text-[9px] sm:text-[11px] font-semibold text-[#C26D85] bg-[#FDF4F5] px-2 py-0.5 rounded-md inline-block">
                         {product.category}
                       </span>
                       <h3 
                         onClick={() => openProductDetails(product.id)}
-                        className="font-bold text-gray-900 text-base hover:text-[#C26D85] cursor-pointer line-clamp-1"
+                        className="font-bold text-gray-900 text-xs sm:text-sm hover:text-[#C26D85] cursor-pointer line-clamp-1"
                       >
                         {product.name}
                       </h3>
-                      <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">
+                      <p className="text-[10px] sm:text-xs text-gray-500 line-clamp-2 leading-tight">
                         {product.description}
                       </p>
                     </div>
 
-                    <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                      <div>
-                        <span className="text-lg font-extrabold text-[#C26D85]">{product.price} ريال</span>
-                      </div>
-                      <div className="flex items-center gap-2">
+                    <div className="space-y-2 pt-2 border-t border-gray-100">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm sm:text-base font-extrabold text-[#C26D85]">{product.price} ريال</span>
                         <button
                           onClick={() => openProductDetails(product.id)}
-                          className="px-3 py-2 bg-gray-100 text-gray-700 text-xs font-medium rounded-xl hover:bg-gray-200 transition-colors"
+                          className="text-[10px] sm:text-xs text-gray-500 hover:text-[#C26D85] underline"
                         >
                           التفاصيل
                         </button>
+                      </div>
+
+                      {/* أزرار السلة واشتري الآن المحدثة */}
+                      <div className="grid grid-cols-2 gap-1.5 pt-1">
                         <button
                           onClick={() => addToCart(product)}
                           disabled={!product.inStock}
-                          className={`p-2 rounded-xl text-white transition-all ${
+                          className={`py-1.5 px-1 rounded-lg text-[10px] sm:text-xs font-bold transition-all flex items-center justify-center gap-1 ${
+                            product.inStock ? 'bg-gray-100 text-gray-800 hover:bg-gray-200' : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                          }`}
+                        >
+                          <ShoppingCart className="w-3 h-3" />
+                          <span>السلة</span>
+                        </button>
+
+                        <button
+                          onClick={() => buyNow(product)}
+                          disabled={!product.inStock}
+                          className={`py-1.5 px-1 rounded-lg text-[10px] sm:text-xs font-bold text-white transition-all flex items-center justify-center gap-1 ${
                             product.inStock ? 'bg-[#C26D85] hover:bg-[#b05c73]' : 'bg-gray-300 cursor-not-allowed'
                           }`}
-                          aria-label="إضافة للسلة"
                         >
-                          <ShoppingCart className="w-4 h-4" />
+                          <Zap className="w-3 h-3 text-[#D4AF37]" />
+                          <span>اشتري الآن</span>
                         </button>
                       </div>
                     </div>
@@ -798,16 +845,16 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
         )}
 
         {activeTab === 'product' && selectedProduct && (
-          <div className="space-y-8">
+          <div className="space-y-6">
             <button
               onClick={() => { setSelectedProductId(null); setActiveTab('home'); }}
-              className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-[#C26D85] bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm transition-colors"
+              className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-gray-600 hover:text-[#C26D85] bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm transition-colors"
             >
               <ArrowRight className="w-4 h-4" />
               <span>العودة للمنتجات</span>
             </button>
 
-            <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 md:p-10 grid grid-cols-1 md:grid-cols-2 gap-10">
+            <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-4 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-4">
                 <div className="aspect-square rounded-2xl overflow-hidden bg-gray-50 border border-gray-100 shadow-inner">
                   <img 
@@ -817,7 +864,7 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
                   />
                 </div>
                 {selectedProduct.images.length > 1 && (
-                  <div className="grid grid-cols-4 gap-3">
+                  <div className="grid grid-cols-4 gap-2">
                     {selectedProduct.images.map((img, idx) => (
                       <div 
                         key={idx} 
@@ -838,18 +885,18 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
                   <span className="inline-block px-3 py-1 bg-[#FDF4F5] text-[#C26D85] text-xs font-bold rounded-lg">
                     {selectedProduct.category}
                   </span>
-                  <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900">
+                  <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-gray-900">
                     {selectedProduct.name}
                   </h1>
-                  <div className="text-2xl font-black text-[#C26D85]">
+                  <div className="text-xl sm:text-2xl font-black text-[#C26D85]">
                     {selectedProduct.price} ريال سعودي
                   </div>
-                  <p className="text-gray-600 text-sm leading-relaxed">
+                  <p className="text-gray-600 text-xs sm:text-sm leading-relaxed">
                     {selectedProduct.description}
                   </p>
 
                   <div className="space-y-3 pt-4 border-t border-gray-100">
-                    <h4 className="font-bold text-gray-900 text-sm">مميزات المنتج:</h4>
+                    <h4 className="font-bold text-gray-900 text-xs sm:text-sm">مميزات المنتج:</h4>
                     <ul className="space-y-2">
                       {selectedProduct.features.map((feat, idx) => (
                         <li key={idx} className="flex items-center gap-2 text-xs text-gray-700">
@@ -872,16 +919,27 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
                   </div>
                 </div>
 
-                <div className="pt-6 border-t border-gray-100 space-y-3">
+                <div className="pt-6 border-t border-gray-100 grid grid-cols-2 gap-3">
                   <button
-                    onClick={() => { addToCart(selectedProduct); setIsCartOpen(true); }}
+                    onClick={() => addToCart(selectedProduct)}
                     disabled={!selectedProduct.inStock}
-                    className={`w-full py-4 rounded-xl font-bold text-white shadow-md transition-all flex items-center justify-center gap-2 ${
+                    className={`py-3.5 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 ${
+                      selectedProduct.inStock ? 'bg-gray-100 text-gray-800 hover:bg-gray-200' : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    }`}
+                  >
+                    <ShoppingCart className="w-4 h-4" />
+                    <span>أضف إلى السلة</span>
+                  </button>
+
+                  <button
+                    onClick={() => buyNow(selectedProduct)}
+                    disabled={!selectedProduct.inStock}
+                    className={`py-3.5 px-3 rounded-xl font-bold text-xs sm:text-sm text-white shadow-md transition-all flex items-center justify-center gap-2 ${
                       selectedProduct.inStock ? 'bg-[#C26D85] hover:bg-[#b05c73]' : 'bg-gray-300 cursor-not-allowed'
                     }`}
                   >
-                    <ShoppingCart className="w-5 h-5" />
-                    <span>{selectedProduct.inStock ? 'إضافة إلى السلة واطلب الآن' : 'المنتج غير متوفر حالياً'}</span>
+                    <Zap className="w-4 h-4 text-[#D4AF37]" />
+                    <span>اشتري الآن</span>
                   </button>
                 </div>
               </div>
@@ -890,10 +948,10 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
         )}
 
         {activeTab === 'checkout' && (
-          <div className="max-w-3xl mx-auto space-y-8">
+          <div className="max-w-3xl mx-auto space-y-6">
             <button
               onClick={() => setActiveTab('home')}
-              className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-[#C26D85] bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm transition-colors"
+              className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-gray-600 hover:text-[#C26D85] bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm transition-colors"
             >
               <ArrowRight className="w-4 h-4" />
               <span>العودة للتسوق</span>
@@ -919,9 +977,9 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
             ) : (
               <div className="bg-white rounded-3xl border border-gray-100 p-6 md:p-8 shadow-sm space-y-6">
                 <div className="border-b border-gray-100 pb-4">
-                  <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center gap-2">
                     <Truck className="w-6 h-6 text-[#C26D85]" />
-                    <span>إدخال بيانات الشحن والدفع عند الاستلام</span>
+                    <span>إدخال بيانات الشحن والدفع عند الاستلاستلام</span>
                   </h2>
                   <p className="text-xs text-gray-500 mt-1">الرجاء إدخال تفاصيل العنوان بدقة لضمان التوصيل السريع</p>
                 </div>
@@ -1053,7 +1111,7 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
                   <div className="pt-4 border-t border-gray-100 space-y-4">
                     <div className="bg-[#FDF4F5] p-4 rounded-xl flex justify-between items-center font-bold text-gray-900">
                       <span>إجمالي الطلب مع التوصيل (الدفع عند الاستلاستلام):</span>
-                      <span className="text-xl text-[#C26D85]">{cartTotal} ريال</span>
+                      <span className="text-lg sm:text-xl text-[#C26D85]">{cartTotal} ريال</span>
                     </div>
 
                     <button
@@ -1073,7 +1131,7 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
           <div className="space-y-8 max-w-4xl mx-auto">
             <div className="flex items-center justify-between border-b border-gray-200 pb-4">
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">لوحة تحكم المتجر</h1>
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900">لوحة تحكم المتجر</h1>
                 <p className="text-xs text-gray-500 mt-1">إدارة المنتجات، الأسعار، المخزون، وطلبات العملاء</p>
               </div>
               {isAdminLoggedIn && (
@@ -1094,7 +1152,7 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
                 </div>
                 <div className="space-y-2">
                   <h3 className="text-lg font-bold text-gray-900">تسجيل دخول الإدارة</h3>
-                  <p className="text-xs text-gray-500">أدخل كلمة المرور للوصول إلى لوحة التحكم (كلمة المرور الافتراضية: admin123)</p>
+                  <p className="text-xs text-gray-500">أدخل كلمة المرور الخاصة بك للوصول إلى لوحة التحكم</p>
                 </div>
                 <form onSubmit={handleAdminLogin} className="space-y-4 text-right">
                   <div>
@@ -1228,6 +1286,7 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
 
       </main>
 
+      {/* Cart Drawer Modal */}
       {isCartOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex justify-end">
           <div className="bg-white w-full max-w-md h-full flex flex-col p-6 shadow-2xl relative animate-in slide-in-from-left duration-300">
@@ -1279,7 +1338,7 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
                   onClick={() => { setIsCartOpen(false); setActiveTab('checkout'); }}
                   className="w-full py-3.5 bg-[#C26D85] text-white font-bold rounded-xl hover:bg-[#b05c73] transition-colors shadow-md"
                 >
-                  إتمام الطلب والدفع عند الاستلام
+                  إتمام الطلب والدفع عند الاستلاستلام
                 </button>
               </div>
             )}
