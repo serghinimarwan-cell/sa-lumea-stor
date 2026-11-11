@@ -4,10 +4,9 @@ import {
   Plus, Minus, Trash2, CheckCircle2, AlertCircle, ShoppingCart, 
   Lock, Eye, Edit, Trash, Package, DollarSign, Users, Copy, Check,
   ArrowRight, Shield, RefreshCw, Truck, Phone, MapPin, Mail, Sparkles,
-  ExternalLink, LogOut, ChevronDown, Filter, Info, Star, Home, Box, Zap
+  ExternalLink, LogOut, ChevronDown, Filter, Info, Star, Home, Box, Zap, User
 } from 'lucide-react';
 
-// إعداد الاتصال بقاعدة البيانات السحابية Supabase
 const SUPABASE_URL = "https://tfcwgecpdvodxxmvxnnn.supabase.co";
 const SUPABASE_KEY = "sb_publishable_n_CFQHNUEOX_WagvE6cs6g_KW3hJtjK";
 
@@ -380,22 +379,28 @@ const INITIAL_PRODUCTS = [
 
 export default function App() {
   const [products, setProducts] = useState(() => {
-    const saved = localStorage.getItem('salumea_products');
-    return saved ? JSON.parse(saved) : INITIAL_PRODUCTS;
+    try {
+      const saved = localStorage.getItem('salumea_products');
+      return saved ? JSON.parse(saved) : INITIAL_PRODUCTS;
+    } catch {
+      return INITIAL_PRODUCTS;
+    }
   });
 
   const [cart, setCart] = useState(() => {
-    const saved = localStorage.getItem('salumea_cart');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('salumea_cart');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
   });
 
-  // جلب الطلبات مباشرة من Supabase السحابي
   const [orders, setOrders] = useState([]);
   
   const loadOrders = async () => {
     const data = await fetchFromSupabase('orders?select=*&order=created_at.desc');
-    if (data) {
-      // تحويل هيكل بيانات سابابيز ليتطابق مع واجهة المتجر لديك
+    if (data && Array.isArray(data)) {
       const formattedOrders = data.map(o => ({
         id: o.order_id,
         date: new Date(o.created_at).toLocaleString('ar-SA'),
@@ -410,7 +415,7 @@ export default function App() {
           buildingNo: '',
           nationalAddress: ''
         },
-        items: [{ name: o.product_name, price: o.price, quantity: 1, images: [selectedProduct?.images?.[0] || ''] }],
+        items: [{ name: o.product_name, price: o.price, quantity: 1, images: [''] }],
         total: o.price,
         status: o.status || 'جديد'
       }));
@@ -420,7 +425,7 @@ export default function App() {
 
   useEffect(() => {
     loadOrders();
-    const interval = setInterval(loadOrders, 5000); // تحديث تلقائي كل 5 ثوانٍ
+    const interval = setInterval(loadOrders, 5000);
     return () => clearInterval(interval);
   }, []);
 
@@ -461,7 +466,7 @@ export default function App() {
   };
 
   useEffect(() => {
-    const handlePopState = (event) => {
+    const handlePopState = () => {
       if (selectedProductId !== null) {
         setSelectedProductId(null);
         setActiveTab('home');
@@ -477,15 +482,23 @@ export default function App() {
   }, [selectedProductId, isCartOpen, activeTab]);
 
   useEffect(() => {
-    localStorage.setItem('salumea_products', JSON.stringify(products));
+    try {
+      localStorage.setItem('salumea_products', JSON.stringify(products));
+    } catch (e) {
+      console.error(e);
+    }
   }, [products]);
 
   useEffect(() => {
-    localStorage.setItem('salumea_cart', JSON.stringify(cart));
+    try {
+      localStorage.setItem('salumea_cart', JSON.stringify(cart));
+    } catch (e) {
+      console.error(e);
+    }
   }, [cart]);
 
   const addToCart = (product, quantity = 1) => {
-    if (!product.inStock) return;
+    if (!product || !product.inStock) return;
     setCart(prev => {
       const existing = prev.find(item => item.id === product.id);
       if (existing) {
@@ -497,7 +510,7 @@ export default function App() {
   };
 
   const buyNow = (product) => {
-    if (!product.inStock) return;
+    if (!product || !product.inStock) return;
     setCart(prev => {
       const existing = prev.find(item => item.id === product.id);
       if (existing) {
@@ -530,14 +543,17 @@ export default function App() {
   }, [cart]);
 
   const openProductDetails = (id) => {
-    window.history.pushState({ view: 'product' }, '');
+    try {
+      window.history.pushState({ view: 'product' }, '');
+    } catch (e) {
+      console.error(e);
+    }
     setSelectedProductId(id);
     setActiveImageIndex(0); 
     setActiveTab('product');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // حفظ الطلب سحابياً في Supabase عند إتمامه
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
     if (!checkoutData.fullName || !checkoutData.phone || !checkoutData.city || !checkoutData.street) {
@@ -565,8 +581,7 @@ export default function App() {
       created_at: new Date().toISOString()
     };
 
-    // إرسال البيانات لقاعدة البيانات في Supabase
-    const res = await fetchFromSupabase('orders', {
+    await fetchFromSupabase('orders', {
       method: 'POST',
       body: JSON.stringify(newDbOrder)
     });
@@ -596,7 +611,7 @@ export default function App() {
   }, [products, currentCategory, searchQuery]);
 
   const selectedProduct = useMemo(() => {
-    return products.find(p => p.id === selectedProductId);
+    return products.find(p => p.id === selectedProductId) || products[0];
   }, [products, selectedProductId]);
 
   const handleAdminLogin = (e) => {
@@ -650,7 +665,6 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
   return (
     <div className="min-h-screen bg-[#FFF9FA] text-[#333] font-sans dir-rtl text-right" dir="rtl">
       
-      {/* Toast Notification Alert */}
       {toastMessage && (
         <div className="fixed bottom-6 left-6 z-50 bg-[#C26D85] text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 animate-bounce">
           <CheckCircle2 className="w-5 h-5 text-[#FDE0E7]" />
@@ -658,13 +672,11 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
         </div>
       )}
 
-      {/* Top Banner */}
       <div className="bg-[#C26D85] text-white text-xs md:text-sm py-2 px-4 text-center font-medium tracking-wide flex justify-center items-center gap-2">
         <Sparkles className="w-4 h-4 text-[#FDE0E7]" />
         <span>توصيل سريع لجميع مناطق المملكة العربية السعودية | الدفع عند الاستلام</span>
       </div>
 
-      {/* Header / Navbar */}
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md shadow-sm border-b border-[#F5E6E8]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
@@ -776,7 +788,6 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
         )}
       </header>
 
-      {/* Main Body Routing */}
       <main className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-6">
 
         {activeTab === 'home' && (
@@ -861,7 +872,7 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
                       onClick={() => openProductDetails(product.id)}
                     >
                       <img 
-                        src={product.images[0]} 
+                        src={product.images?.[0]} 
                         alt={product.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
@@ -932,12 +943,12 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
               <div className="space-y-4">
                 <div className="aspect-square rounded-2xl overflow-hidden bg-[#FFF9FA] border border-[#F5E6E8]">
                   <img 
-                    src={selectedProduct.images[activeImageIndex]} 
+                    src={selectedProduct.images?.[activeImageIndex]} 
                     alt={selectedProduct.name}
                     className="w-full h-full object-cover"
                   />
                 </div>
-                {selectedProduct.images.length > 1 && (
+                {selectedProduct.images && selectedProduct.images.length > 1 && (
                   <div className="flex gap-2 overflow-x-auto pb-2">
                     {selectedProduct.images.map((img, index) => (
                       <button
@@ -1284,7 +1295,7 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
                       {products.map(p => (
                         <div key={p.id} className="p-3 bg-gray-50 rounded-2xl border border-gray-100 flex items-center justify-between gap-3 text-xs">
                           <div className="flex items-center gap-3">
-                            <img src={p.images[0]} alt="" className="w-10 h-10 rounded-xl object-cover" />
+                            <img src={p.images?.[0]} alt="" className="w-10 h-10 rounded-xl object-cover" />
                             <div>
                               <span className="font-bold text-gray-900 block line-clamp-1">{p.name}</span>
                               <div className="flex items-center gap-2 mt-1">
@@ -1343,7 +1354,7 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
                               <span className="font-bold text-gray-900 block">المنتجات المطلوبة:</span>
                               {order.items.map((item, idx) => (
                                 <div key={idx} className="flex justify-between text-gray-600 text-[11px]">
-                                  <span>• {item.name} (×{item.quantity})</span>
+                                  <span>{item.name} (×{item.quantity})</span>
                                   <span>{item.price * item.quantity} ريال</span>
                                 </div>
                               ))}
@@ -1453,7 +1464,7 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
                 ) : (
                   cart.map(item => (
                     <div key={item.id} className="flex gap-3 p-3 bg-gray-50 rounded-2xl border border-gray-100 items-center">
-                      <img src={item.images[0]} alt="" className="w-16 h-16 rounded-xl object-cover shrink-0" />
+                      <img src={item.images?.[0]} alt="" className="w-16 h-16 rounded-xl object-cover shrink-0" />
                       <div className="flex-1 min-w-0">
                         <h4 className="font-bold text-xs text-gray-900 line-clamp-1">{item.name}</h4>
                         <div className="text-[#C26D85] font-extrabold text-xs mt-0.5">{item.price} ريال</div>
