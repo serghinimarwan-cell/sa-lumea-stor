@@ -423,7 +423,7 @@ export default function App() {
 
   useEffect(() => {
     loadData();
-    const interval = setInterval(loadData, 5000);
+    const interval = setInterval(loadData, 3000);
     return () => clearInterval(interval);
   }, []);
 
@@ -1469,7 +1469,7 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
                 )}
               </div>
 
-              {cart.length > 0 &&, (
+              {cart.length > 0 && (
                 <div className="p-4 bg-[#FFF9FA] border-t border-[#F5E6E8] space-y-4">
                   <div className="flex justify-between items-center text-sm font-extrabold text-gray-900">
                     <span>المجموع الكلي:</span>
@@ -1490,6 +1490,7 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
         </div>
       )}
 
+      {/* Footer */}
       <footer className="bg-white border-t border-[#F5E6E8] py-8 mt-16 text-center text-xs text-gray-500 space-y-3">
         <div className="flex items-center justify-center gap-3">
           <span className="font-bold text-base text-[#C26D85]">S.A LUMÉA</span>
