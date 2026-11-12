@@ -378,30 +378,30 @@ const INITIAL_PRODUCTS = [
 ];
 
 export default function App() {
-  const [products, setProducts] = useState(() => {
-    try {
-      const saved = localStorage.getItem('salumea_products');
-      return saved ? JSON.parse(saved) : INITIAL_PRODUCTS;
-    } catch {
-      return INITIAL_PRODUCTS;
-    }
-  });
-
-  const [cart, setCart] = useState(() => {
-    try {
-      const saved = localStorage.getItem('salumea_cart');
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
-
+  const [products, setProducts] = useState(INITIAL_PRODUCTS);
+  const [cart, setCart] = useState([]);
   const [orders, setOrders] = useState([]);
-  
-  const loadOrders = async () => {
-    const data = await fetchFromSupabase('orders?select=*&order=created_at.desc');
-    if (data && Array.isArray(data)) {
-      const formattedOrders = data.map(o => ({
+
+  // جلب المنتجات والطلبات من Supabase عند فتح الموقع
+  const loadData = async () => {
+    // 1. جلب المنتجات المخزنة سحابياً
+    const dbProducts = await fetchFromSupabase('products?select=*');
+    if (dbProducts && Array.isArray(dbProducts) && dbProducts.length > 0) {
+      setProducts(dbProducts);
+    } else {
+      // إذا كانت قاعدة البيانات فارغة لأول مرة، قم بإدراج المنتجات الأولية
+      for (let p of INITIAL_PRODUCTS) {
+        await fetchFromSupabase('products', {
+          method: 'POST',
+          body: JSON.stringify(p)
+        });
+      }
+    }
+
+    // 2. جلب الطلبات
+    const dbOrders = await fetchFromSupabase('orders?select=*&order=created_at.desc');
+    if (dbOrders && Array.isArray(dbOrders)) {
+      const formattedOrders = dbOrders.map(o => ({
         id: o.order_id,
         date: new Date(o.created_at).toLocaleString('ar-SA'),
         customer: {
@@ -424,8 +424,8 @@ export default function App() {
   };
 
   useEffect(() => {
-    loadOrders();
-    const interval = setInterval(loadOrders, 5000);
+    loadData();
+    const interval = setInterval(loadData, 5000); // تحديث دوري كل 5 ثوانٍ
     return () => clearInterval(interval);
   }, []);
 
@@ -464,38 +464,6 @@ export default function App() {
       setToastMessage(null);
     }, 3000);
   };
-
-  useEffect(() => {
-    const handlePopState = () => {
-      if (selectedProductId !== null) {
-        setSelectedProductId(null);
-        setActiveTab('home');
-      } else if (isCartOpen) {
-        setIsCartOpen(false);
-      } else if (activeTab !== 'home') {
-        setActiveTab('home');
-      }
-    };
-
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, [selectedProductId, isCartOpen, activeTab]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('salumea_products', JSON.stringify(products));
-    } catch (e) {
-      console.error(e);
-    }
-  }, [products]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('salumea_cart', JSON.stringify(cart));
-    } catch (e) {
-      console.error(e);
-    }
-  }, [cart]);
 
   const addToCart = (product, quantity = 1) => {
     if (!product || !product.inStock) return;
@@ -543,11 +511,6 @@ export default function App() {
   }, [cart]);
 
   const openProductDetails = (id) => {
-    try {
-      window.history.pushState({ view: 'product' }, '');
-    } catch (e) {
-      console.error(e);
-    }
     setSelectedProductId(id);
     setActiveImageIndex(0); 
     setActiveTab('product');
@@ -586,19 +549,16 @@ export default function App() {
       body: JSON.stringify(newDbOrder)
     });
 
-    const newOrderUI = {
+    setOrderSuccess({
       id: refNumber,
       date: new Date().toLocaleString('ar-SA'),
       customer: { ...checkoutData },
       items: [...cart],
       total: cartTotal,
       status: 'جديد'
-    };
-
-    setOrders([newOrderUI, ...orders]);
-    setOrderSuccess(newOrderUI);
+    });
     setCart([]);
-    loadOrders();
+    loadData();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -624,20 +584,23 @@ export default function App() {
     }
   };
 
-  const updateProductStock = (id, inStock) => {
-    setProducts(prev => {
-      const updated = prev.map(p => p.id === id ? { ...p, inStock } : p);
-      localStorage.setItem('salumea_products', JSON.stringify(updated));
-      return updated;
+  // تحديث المخزون سحابياً في Supabase لكي يراه الجميع
+  const updateProductStock = async (id, inStock) => {
+    setProducts(prev => prev.map(p => p.id === id ? { ...p, inStock } : p));
+    await fetchFromSupabase(`products?id=eq.${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ inStock })
     });
-    showToast("تم تحديث حالة المخزون بنجاح!");
+    showToast("تم تحديث حالة المخزون سحابياً بنجاح!");
   };
 
-  const updateProductPrice = (id, price) => {
-    setProducts(prev => {
-      const updated = prev.map(p => p.id === id ? { ...p, price: Number(price) } : p);
-      localStorage.setItem('salumea_products', JSON.stringify(updated));
-      return updated;
+  // تحديث السعر سحابياً في Supabase
+  const updateProductPrice = async (id, price) => {
+    const numPrice = Number(price);
+    setProducts(prev => prev.map(p => p.id === id ? { ...p, price: numPrice } : p));
+    await fetchFromSupabase(`products?id=eq.${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ price: numPrice })
     });
   };
 
@@ -1281,7 +1244,7 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
                 <div className="flex items-center justify-between bg-white p-6 rounded-3xl border border-[#F5E6E8] shadow-sm">
                   <div>
                     <h2 className="text-xl font-bold text-gray-900">لوحة تحكم المتجر (سحابية)</h2>
-                    <p className="text-xs text-gray-500 mt-0.5">الطلبات متزامنة لحظياً عبر قاعدة البيانات السحابية Supabase</p>
+                    <p className="text-xs text-gray-500 mt-0.5">المنتجات والطلبات متزامنة سحابياً ولحظياً عبر Supabase</p>
                   </div>
                   <button 
                     onClick={() => setIsAdminLoggedIn(false)}
@@ -1518,7 +1481,7 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
                   </div>
 
                   <button
-                    onClick={() => { setIsCartOpen(false); setActiveTab('checkout'); }}
+                    onClick={() => { setIsCartOpen(false); setActiveTag('checkout'); }}
                     className="w-full py-3.5 bg-[#C26D85] hover:bg-[#b05c73] text-white font-bold rounded-2xl shadow-md transition-all text-sm flex items-center justify-center gap-2"
                   >
                     <span>إتمام الطلب (الدفع عند الاستلام)</span>
