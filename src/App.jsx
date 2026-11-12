@@ -625,11 +625,20 @@ export default function App() {
   };
 
   const updateProductStock = (id, inStock) => {
-    setProducts(prev => prev.map(p => p.id === id ? { ...p, inStock } : p));
+    setProducts(prev => {
+      const updated = prev.map(p => p.id === id ? { ...p, inStock } : p);
+      localStorage.setItem('salumea_products', JSON.stringify(updated));
+      return updated;
+    });
+    showToast("تم تحديث حالة المخزون بنجاح!");
   };
 
   const updateProductPrice = (id, price) => {
-    setProducts(prev => prev.map(p => p.id === id ? { ...p, price: Number(price) } : p));
+    setProducts(prev => {
+      const updated = prev.map(p => p.id === id ? { ...p, price: Number(price) } : p);
+      localStorage.setItem('salumea_products', JSON.stringify(updated));
+      return updated;
+    });
   };
 
   const updateOrderStatus = async (orderId, status) => {
@@ -1018,13 +1027,15 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
                 <div className="pt-4 border-t border-gray-100 flex items-center gap-3">
                   <button
                     onClick={() => buyNow(selectedProduct)}
-                    className="flex-1 py-3.5 bg-[#D4AF37] hover:bg-[#c29e2f] text-white font-bold rounded-2xl shadow-md transition-all text-sm flex items-center justify-center gap-2"
+                    disabled={!selectedProduct.inStock}
+                    className={`flex-1 py-3.5 font-bold rounded-2xl shadow-md transition-all text-sm flex items-center justify-center gap-2 ${selectedProduct.inStock ? 'bg-[#D4AF37] hover:bg-[#c29e2f] text-white' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
                   >
-                    <span>اطلبي الآن (الدفع عند الاستلام)</span>
+                    <span>{selectedProduct.inStock ? 'اطلبي الآن (الدفع عند الاستلام)' : 'المنتج نفد من المخزون'}</span>
                   </button>
                   <button
                     onClick={() => addToCart(selectedProduct)}
-                    className="px-5 py-3.5 bg-[#FDF4F5] hover:bg-[#C26D85] hover:text-white text-[#C26D85] font-bold rounded-2xl transition-all text-sm flex items-center justify-center gap-2 border border-[#F5E6E8]"
+                    disabled={!selectedProduct.inStock}
+                    className={`px-5 py-3.5 font-bold rounded-2xl transition-all text-sm flex items-center justify-center gap-2 border ${selectedProduct.inStock ? 'bg-[#FDF4F5] hover:bg-[#C26D85] hover:text-white text-[#C26D85] border-[#F5E6E8]' : 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'}`}
                   >
                     <ShoppingCart className="w-5 h-5"/>
                     <span className="hidden sm:inline">أضف للسلة</span>
