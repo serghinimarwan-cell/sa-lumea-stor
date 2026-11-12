@@ -382,23 +382,21 @@ export default function App() {
   const [cart, setCart] = useState([]);
   const [orders, setOrders] = useState([]);
 
-  // جلب المنتجات والطلبات من Supabase عند فتح الموقع
   const loadData = async () => {
-    // 1. جلب المنتجات المخزنة سحابياً
     const dbProducts = await fetchFromSupabase('products?select=*');
     if (dbProducts && Array.isArray(dbProducts) && dbProducts.length > 0) {
       setProducts(dbProducts);
     } else {
-      // إذا كانت قاعدة البيانات فارغة لأول مرة، قم بإدراج المنتجات الأولية
       for (let p of INITIAL_PRODUCTS) {
         await fetchFromSupabase('products', {
           method: 'POST',
           body: JSON.stringify(p)
         });
       }
+      const reloaded = await fetchFromSupabase('products?select=*');
+      if (reloaded) setProducts(reloaded);
     }
 
-    // 2. جلب الطلبات
     const dbOrders = await fetchFromSupabase('orders?select=*&order=created_at.desc');
     if (dbOrders && Array.isArray(dbOrders)) {
       const formattedOrders = dbOrders.map(o => ({
@@ -425,7 +423,7 @@ export default function App() {
 
   useEffect(() => {
     loadData();
-    const interval = setInterval(loadData, 5000); // تحديث دوري كل 5 ثوانٍ
+    const interval = setInterval(loadData, 5000);
     return () => clearInterval(interval);
   }, []);
 
@@ -584,7 +582,6 @@ export default function App() {
     }
   };
 
-  // تحديث المخزون سحابياً في Supabase لكي يراه الجميع
   const updateProductStock = async (id, inStock) => {
     setProducts(prev => prev.map(p => p.id === id ? { ...p, inStock } : p));
     await fetchFromSupabase(`products?id=eq.${id}`, {
@@ -594,7 +591,6 @@ export default function App() {
     showToast("تم تحديث حالة المخزون سحابياً بنجاح!");
   };
 
-  // تحديث السعر سحابياً في Supabase
   const updateProductPrice = async (id, price) => {
     const numPrice = Number(price);
     setProducts(prev => prev.map(p => p.id === id ? { ...p, price: numPrice } : p));
@@ -1473,7 +1469,7 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
                 )}
               </div>
 
-              {cart.length > 0 && (
+              {cart.length > 0 &&, (
                 <div className="p-4 bg-[#FFF9FA] border-t border-[#F5E6E8] space-y-4">
                   <div className="flex justify-between items-center text-sm font-extrabold text-gray-900">
                     <span>المجموع الكلي:</span>
@@ -1481,7 +1477,7 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
                   </div>
 
                   <button
-                    onClick={() => { setIsCartOpen(false); setActiveTag('checkout'); }}
+                    onClick={() => { setIsCartOpen(false); setActiveTab('checkout'); }}
                     className="w-full py-3.5 bg-[#C26D85] hover:bg-[#b05c73] text-white font-bold rounded-2xl shadow-md transition-all text-sm flex items-center justify-center gap-2"
                   >
                     <span>إتمام الطلب (الدفع عند الاستلام)</span>
@@ -1494,7 +1490,6 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
         </div>
       )}
 
-      {/* Footer */}
       <footer className="bg-white border-t border-[#F5E6E8] py-8 mt-16 text-center text-xs text-gray-500 space-y-3">
         <div className="flex items-center justify-center gap-3">
           <span className="font-bold text-base text-[#C26D85]">S.A LUMÉA</span>
