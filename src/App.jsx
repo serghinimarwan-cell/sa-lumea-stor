@@ -24,14 +24,10 @@ const fetchFromSupabase = async (endpoint, options = {}) => {
         ...options.headers
       }
     });
-    if (!res.ok) {
-      const errText = await res.text();
-      console.error("Supabase API Error Details:", errText);
-      throw new Error(`Supabase error: ${res.status}`);
-    }
+    if (!res.ok) throw new Error('Network response was not ok');
     return await res.json();
   } catch (err) {
-    console.error("Supabase Network Error:", err);
+    console.error("Supabase Error:", err);
     return null;
   }
 };
@@ -411,14 +407,13 @@ const INITIAL_PRODUCTS = [
 ];
 
 export default function App() {
-  // الاعتماد الكلي والموثوق على التخزين المحلي الفوري في المتصفح لضمان بقاء التعديلات تابثة ومستقرة
   const [products, setProducts] = useState(() => {
     try {
-      const savedLocal = localStorage.getItem('sa_lumea_inventory_v4');
+      const savedLocal = localStorage.getItem('sa_lumea_inventory_v5');
       if (savedLocal) {
         const map = JSON.parse(savedLocal);
         return INITIAL_PRODUCTS.map(p => {
-          const s = map[p.name] || map[p.id];
+          const s = map[p.id] || map[p.name];
           if (s) {
             return {
               ...p,
@@ -549,7 +544,6 @@ export default function App() {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  // جلب الطلبات الواردة فقط من Supabase بشكل صحيح ومستقر
   const loadOrdersOnly = async () => {
     const dbOrders = await fetchFromSupabase('orders?select=*&order=created_at.desc');
     if (dbOrders && Array.isArray(dbOrders)) {
@@ -582,14 +576,13 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // حفظ التعديلات محلياً بشكل دائم ومضمون 100% في المتصفح
   const saveInventoryLocally = (updatedProducts) => {
     const inventoryMap = {};
     updatedProducts.forEach(p => {
-      inventoryMap[p.name] = { inStock: p.inStock, price: p.price };
       inventoryMap[p.id] = { inStock: p.inStock, price: p.price };
+      inventoryMap[p.name] = { inStock: p.inStock, price: p.price };
     });
-    localStorage.setItem('sa_lumea_inventory_v4', JSON.stringify(inventoryMap));
+    localStorage.setItem('sa_lumea_inventory_v5', JSON.stringify(inventoryMap));
   };
 
   const showToast = (msg) => {
@@ -897,7 +890,7 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
                 <h1 className="text-2xl md:text-5xl font-extrabold text-gray-900 leading-tight">
                   اكتشفي سر <span className="text-[#C26D85]">الجمال الفاخر</span> والعناية المتكاملة
                 </h1>
-                <p className="text-gray-650 text-sm md:text-lg leading-relaxed">
+                <p className="text-gray-600 text-sm md:text-lg leading-relaxed">
                   تشكيلة ممتازة من منتجات العناية بالبشرة، الشعر والجسم المختارة بعناية للسوق السعودي. توصيل سريع ودفع عند الاستلام.
                 </p>
                 <div className="pt-2 flex flex-wrap gap-4">
@@ -1369,7 +1362,7 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
                 <div className="flex items-center justify-between bg-white p-6 rounded-3xl border border-[#F5E6E8] shadow-sm">
                   <div>
                     <h2 className="text-xl font-bold text-gray-900">لوحة تحكم المتجر</h2>
-                    <p className="text-xs text-gray-500 mt-0.5">إدارة حالة المخزون والأثمنة بشكل دائم ومستقر</p>
+                    <p className="text-xs text-gray-500 mt-0.5">إدارة المخزون والأثمنة بشكل دائم وثابت ومستقر</p>
                   </div>
                   <button 
                     onClick={() => setIsAdminLoggedIn(false)}
