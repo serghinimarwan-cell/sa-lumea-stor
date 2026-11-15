@@ -71,6 +71,22 @@ const INITIAL_PRODUCTS = [
   {
     id: 3,
     category: "العناية بالبشرة",
+    name: "سيروم فيتامين سي طبيعي SADOER",
+    price: 120,
+    inStock: true,
+    description: "سيروم فيتامين سي من SADOER للعناية بالبشرة وتوحيد لونها وإعادة الحيوية إليها.",
+    features: ["مضاد لأكسدة البشرة", "يعزز الإشراق والترطيب", "سريع الامتصاص"],
+    specs: "30 ml",
+    contents: "عبوة سيروم 30 مل",
+    usage: "توضع بضع قطرات على الوجه والرقبة صباحاً ومساءً.",
+    images: [
+      "https://media.taager.com/ac7d39c2-f5dc-43df-9a4a-db73d8003dc0.jpg",
+      "https://media.taager.com/736b5dd8-1e09-4f9a-ac2e-85611b7f9037.jpg",
+      "https://media.taager.com/d8398199-326f-4f04-9cab-6b754f566bd5.jpg"
+    ]
+  },
+  {
+    العناية بالبشرة",
     name: "بكج ساكورا الوردي بفيتامين سي لتفتيح مضاعف وتصفية البشرة (6 قطع)",
     price: 170,
     inStock: true,
@@ -107,7 +123,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 5,
+    id: 4,
     category: "العناية بالبشرة",
     name: "إيكوالبيري الأزرق – سيروم هيالتوين المغذي 30 مل",
     price: 123,
@@ -125,7 +141,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 6,
+    id: 5,
     category: "العناية بالبشرة",
     name: "عرض 3 من صابون حمض الكوجيك الكوري",
     price: 160,
@@ -146,7 +162,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 7,
+    id: 6,
     category: "العناية بالبشرة",
     name: "جهاز مساج الوجه للتصريف اللمفاوي",
     price: 124,
@@ -164,7 +180,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 8,
+    id: 7,
     category: "العناية بالبشرة",
     name: "صابون حمض الكوجيك الكوري – قطعة واحدة",
     price: 113,
@@ -184,7 +200,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 9,
+    id: 8,
     category: "العناية بالجسم",
     name: "لوشن كولاجين ليفت 10X لشد الترهلات – 300 غرام",
     price: 139,
@@ -201,7 +217,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 10,
+    id: 9,
     category: "العناية بالجسم",
     name: "مجموعة فلاتر شاور معطرة – 4 روائح",
     price: 153,
@@ -222,7 +238,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 11,
+    id: 10,
     category: "العناية بالجسم",
     name: "عرض 2 من غسول كير كول للمناطق الحساسة – 215 مل",
     price: 149,
@@ -235,7 +251,7 @@ const INITIAL_PRODUCTS = [
     images: ["https://media.taager.com/12f0fb13-544b-444d-af6b-bb637da10c90.jpg"]
   },
   {
-    id: 12,
+    id: 11,
     category: "العناية بالجسم",
     name: "غسول كير كول للمناطق الحساسة بخلاصة النيلة الزرقاء",
     price: 130,
@@ -251,7 +267,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 13,
+    id: 12,
     category: "العناية بالجسم",
     name: "غسول كير كول للمناطق الحساسة بخلاصة عكر فاسي",
     price: 130,
@@ -268,7 +284,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 14,
+    id: 13,
     category: "العناية بالشعر",
     name: "عرض 6 من زيت الشعر 108 عشبة الهندي",
     price: 199,
@@ -286,7 +302,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 15,
+    id: 14,
     category: "العناية بالشعر",
     name: "زيت الشعر 108 عشبة الهندي – تركيبة جديدة – 250 مل",
     price: 118,
@@ -302,7 +318,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 16,
+    id: 15,
     category: "العناية بالشعر",
     name: "باندل العناية والتصفيف: زيت الأعشاب 1 لتر + مصفف الشعر",
     price: 229,
@@ -315,7 +331,7 @@ const INITIAL_PRODUCTS = [
     images: ["https://media.taager.com/4058d6e0-7860-412c-83e9-a2fbf1ee6fe3.jpg"]
   },
   {
-    id: 17,
+    id: 16,
     category: "العناية بالشعر",
     name: "زيت الأعشاب الهندية لحماية الشعر – 1 لتر",
     price: 153,
@@ -332,7 +348,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 18,
+    id: 17,
     category: "العناية بالشعر",
     name: "مصفف الشعر المزدوج 2 في 1 برأسين للتبديل",
     price: 170,
@@ -350,7 +366,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 19,
+    id: 18,
     category: "العناية بالشعر",
     name: "بكج دلال وتكثيف الشعر بالباتانا",
     price: 169,
@@ -363,7 +379,7 @@ const INITIAL_PRODUCTS = [
     images: ["https://media.taager.com/d90a1a6b-e2be-46bc-bf02-87585b3a01b2.jpg"]
   },
   {
-    id: 20,
+    id: 19,
     category: "العناية بالشعر",
     name: "مجموعة الباتانا: شامبو وبلسم وزيت وماسك",
     price: 142,
@@ -382,7 +398,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 21,
+    id: 20,
     category: "العناية بالشعر",
     name: "فرشاة تمليس الشعر بالبخار المضادة للحروق – JY-603",
     price: 130,
@@ -405,9 +421,11 @@ export default function App() {
   const [cart, setCart] = useState([]);
   const [orders, setOrders] = useState([]);
 
+  // جلب الطلبات + إعدادات المخزون والأسعار السحابية من جدول orders المضمون 100%
   const loadData = async () => {
     const dbOrders = await fetchFromSupabase('orders?select=*&order=created_at.desc');
     if (dbOrders && Array.isArray(dbOrders)) {
+      // 1. البحث عن سجل إعدادات المنتجات المخفي (SYS_INVENTORY)
       const configRecord = dbOrders.find(o => o.order_id === 'SYS_INVENTORY');
       if (configRecord && configRecord.address) {
         try {
@@ -427,6 +445,7 @@ export default function App() {
         }
       }
 
+      // 2. فلترة الطلبات الحقيقية للزبائن (استبعاد السجل المخفي)
       const realOrders = dbOrders.filter(o => o.order_id !== 'SYS_INVENTORY');
       const formattedOrders = realOrders.map(o => ({
         id: o.order_id,
@@ -461,6 +480,7 @@ export default function App() {
     };
   }, []);
 
+  // حفظ حالة المخزون والأسعار في Supabase فوراً
   const syncInventoryToCloud = async (updatedProducts) => {
     const inventoryMap = {};
     updatedProducts.forEach(p => {
@@ -468,6 +488,7 @@ export default function App() {
     });
     const jsonString = JSON.stringify(inventoryMap);
 
+    // التحقق هل السجل موجود مسبقاً أم ننشئه
     const existing = await fetchFromSupabase('orders?order_id=eq.SYS_INVENTORY&select=order_id');
     if (existing && existing.length > 0) {
       await fetchFromSupabase('orders?order_id=eq.SYS_INVENTORY', {
