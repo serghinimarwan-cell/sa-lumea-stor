@@ -800,7 +800,7 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
                 <h1 className="text-2xl md:text-5xl font-extrabold text-gray-900 leading-tight">
                   اكتشفي سر <span className="text-[#C26D85]">الجمال الفاخر</span> والعناية المتكاملة
                 </h1>
-                <p className="text-gray-650 text-sm md:text-lg leading-relaxed">
+                <p className="text-gray-600 text-sm md:text-lg leading-relaxed">
                   تشكيلة ممتازة من منتجات العناية بالبشرة، الشعر والجسم المختارة بعناية للسوق السعودي. توصيل سريع ودفع عند الاستلام.
                 </p>
                 <div className="pt-2 flex flex-wrap gap-4">
