@@ -524,6 +524,7 @@ export default function App() {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
+  // تحميل البيانات والمخزون المربوط بالاسم (بالتزامن مع Supabase)
   const loadData = async () => {
     const dbOrders = await fetchFromSupabase('orders?select=*&order=created_at.desc');
     if (dbOrders && Array.isArray(dbOrders)) {
@@ -532,11 +533,13 @@ export default function App() {
         try {
           const savedMap = JSON.parse(configRecord.address);
           setProducts(prev => prev.map(p => {
-            if (savedMap[p.id]) {
+            // المطابقة بالاسم لتفادي ضياع المخزون عند تغير الـ IDs
+            const match = savedMap[p.name];
+            if (match) {
               return {
                 ...p,
-                inStock: savedMap[p.id].inStock !== undefined ? savedMap[p.id].inStock : p.inStock,
-                price: savedMap[p.id].price !== undefined ? savedMap[p.id].price : p.price
+                inStock: match.inStock !== undefined ? match.inStock : p.inStock,
+                price: match.price !== undefined ? match.price : p.price
               };
             }
             return p;
@@ -580,10 +583,11 @@ export default function App() {
     };
   }, []);
 
+  // مزامنة المخزون بالاسم سحابياً
   const syncInventoryToCloud = async (updatedProducts) => {
     const inventoryMap = {};
     updatedProducts.forEach(p => {
-      inventoryMap[p.id] = { inStock: p.inStock, price: p.price };
+      inventoryMap[p.name] = { inStock: p.inStock, price: p.price };
     });
     const jsonString = JSON.stringify(inventoryMap);
 
@@ -1627,7 +1631,7 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
                   </div>
 
                   <button
-                    onClick={() => { setIsCartOpen(false); setActiveTab('checkout'); }}
+                    onClick={() => { setIsCartOpen(false); navigateTab('checkout'); }}
                     className="w-full py-3.5 bg-[#C26D85] hover:bg-[#b05c73] text-white font-bold rounded-2xl shadow-md transition-all text-sm flex items-center justify-center gap-2"
                   >
                     <span>إتمام الطلب (الدفع عند الاستلام)</span>
