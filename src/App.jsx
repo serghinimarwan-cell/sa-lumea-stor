@@ -407,7 +407,30 @@ const INITIAL_PRODUCTS = [
 ];
 
 export default function App() {
-  const [products, setProducts] = useState(INITIAL_PRODUCTS);
+  // تحميل المنتجات مع حالة المخزون والأثمنة المحفوظة نهائياً في متصفح المستخدم (localStorage)
+  const [products, setProducts] = useState(() => {
+    try {
+      const savedInventory = localStorage.getItem('sa_lumea_inventory_v2');
+      if (savedInventory) {
+        const inventoryMap = JSON.parse(savedInventory);
+        return INITIAL_PRODUCTS.map(p => {
+          const saved = inventoryMap[p.name] || inventoryMap[p.id];
+          if (saved) {
+            return {
+              ...p,
+              inStock: saved.inStock !== undefined ? saved.inStock : p.inStock,
+              price: saved.price !== undefined ? saved.price : p.price
+            };
+          }
+          return p;
+        });
+      }
+    } catch (e) {
+      console.error("Local storage load error", e);
+    }
+    return INITIAL_PRODUCTS;
+  });
+
   const [orders, setOrders] = useState([]);
 
   const [cart, setCart] = useState(() => {
@@ -524,30 +547,10 @@ export default function App() {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  // دالة التحميل مع دعم مطابقة المنتجات بالاسم أو بالـ ID لتفادي أي ضياع للبيانات
-  const loadData = async () => {
+  // دالة تحميل الطلبات الواردة فقط من Supabase
+  const loadOrdersOnly = async () => {
     const dbOrders = await fetchFromSupabase('orders?select=*&order=created_at.desc');
     if (dbOrders && Array.isArray(dbOrders)) {
-      const configRecord = dbOrders.find(o => o.order_id === 'SYS_INVENTORY');
-      if (configRecord && configRecord.address) {
-        try {
-          const savedMap = JSON.parse(configRecord.address);
-          setProducts(prev => prev.map(p => {
-            const match = savedMap[p.name] || savedMap[p.id] || savedMap[String(p.id)];
-            if (match) {
-              return {
-                ...p,
-                inStock: match.inStock !== undefined ? match.inStock : p.inStock,
-                price: match.price !== undefined ? match.price : p.price
-              };
-            }
-            return p;
-          }));
-        } catch (e) {
-          console.error("Parse error", e);
-        }
-      }
-
       const realOrders = dbOrders.filter(o => o.order_id !== 'SYS_INVENTORY');
       const formattedOrders = realOrders.map(o => ({
         id: o.order_id,
@@ -572,49 +575,19 @@ export default function App() {
   };
 
   useEffect(() => {
-    loadData();
-    const interval = setInterval(loadData, 3000);
-    const handleFocus = () => loadData();
-    window.addEventListener('focus', handleFocus);
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener('focus', handleFocus);
-    };
+    loadOrdersOnly();
+    const interval = setInterval(loadOrdersOnly, 5000);
+    return () => clearInterval(interval);
   }, []);
 
-  // مزامنة المخزون بالاسم والـ ID معاً لضمان الاستقرار التام
-  const syncInventoryToCloud = async (updatedProducts) => {
+  // حفظ المخزون والأثمنة محلياً ودائماً في المتصفح فالحين
+  const saveInventoryLocally = (updatedProducts) => {
     const inventoryMap = {};
     updatedProducts.forEach(p => {
       inventoryMap[p.name] = { inStock: p.inStock, price: p.price };
       inventoryMap[p.id] = { inStock: p.inStock, price: p.price };
     });
-    const jsonString = JSON.stringify(inventoryMap);
-
-    const existing = await fetchFromSupabase('orders?order_id=eq.SYS_INVENTORY&select=order_id');
-    if (existing && existing.length > 0) {
-      await fetchFromSupabase('orders?order_id=eq.SYS_INVENTORY', {
-        method: 'PATCH',
-        body: JSON.stringify({ address: jsonString })
-      });
-    } else {
-      await fetchFromSupabase('orders', {
-        method: 'POST',
-        body: JSON.stringify({
-          order_id: 'SYS_INVENTORY',
-          customer_name: 'SYSTEM',
-          phone: '0000',
-          alt_phone: '0000',
-          region: 'SYS',
-          city: 'SYS',
-          address: jsonString,
-          product_name: 'INVENTORY_CONFIG',
-          price: 0,
-          status: 'SYS',
-          created_at: new Date().toISOString()
-        })
-      });
-    }
+    localStorage.setItem('sa_lumea_inventory_v2', JSON.stringify(inventoryMap));
   };
 
   const showToast = (msg) => {
@@ -714,7 +687,7 @@ export default function App() {
       status: 'جديد'
     });
     setCart([]);
-    loadData();
+    loadOrdersOnly();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -740,18 +713,18 @@ export default function App() {
     }
   };
 
-  const updateProductStock = async (id, inStock) => {
+  const updateProductStock = (id, inStock) => {
     const updated = products.map(p => p.id === id ? { ...p, inStock } : p);
     setProducts(updated);
-    await syncInventoryToCloud(updated);
-    showToast("تم حفظ حالة المخزون سحابياً بنجاح!");
+    saveInventoryLocally(updated);
+    showToast("تم حفظ حالة المخزون بنجاح دائم!");
   };
 
-  const updateProductPrice = async (id, price) => {
+  const updateProductPrice = (id, price) => {
     const numPrice = Number(price);
     const updated = products.map(p => p.id === id ? { ...p, price: numPrice } : p);
     setProducts(updated);
-    await syncInventoryToCloud(updated);
+    saveInventoryLocally(updated);
   };
 
   const updateOrderStatus = async (orderId, status) => {
@@ -1393,8 +1366,8 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
               <div className="space-y-6">
                 <div className="flex items-center justify-between bg-white p-6 rounded-3xl border border-[#F5E6E8] shadow-sm">
                   <div>
-                    <h2 className="text-xl font-bold text-gray-900">لوحة تحكم المتجر (سحابية)</h2>
-                    <p className="text-xs text-gray-500 mt-0.5">المنتجات والطلبات متزامنة سحابياً ولحظياً عبر Supabase</p>
+                    <h2 className="text-xl font-bold text-gray-900">لوحة تحكم المتجر</h2>
+                    <p className="text-xs text-gray-500 mt-0.5">حالة المخزون والأثمنة محفوظة محلياً ودائماً في المتصفح</p>
                   </div>
                   <button 
                     onClick={() => setIsAdminLoggedIn(false)}
