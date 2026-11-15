@@ -378,14 +378,28 @@ const INITIAL_PRODUCTS = [
 ];
 
 export default function App() {
-  const [products, setProducts] = useState(() => {
-    try {
-      const saved = localStorage.getItem('salumea_products');
-      return saved ? JSON.parse(saved) : INITIAL_PRODUCTS;
-    } catch {
-      return INITIAL_PRODUCTS;
+  const [products, setProducts] = useState(INITIAL_PRODUCTS);
+
+  // تحميل المنتجات من Supabase لضمان المزامنة بين الأجهزة
+  const loadProducts = async () => {
+    const data = await fetchFromSupabase('products?select=*&order=id.asc');
+    if (data && Array.isArray(data) && data.length > 0) {
+      const formatted = data.map(p => ({
+        id: p.id,
+        category: p.category,
+        name: p.name,
+        price: p.price,
+        inStock: p.in_stock !== undefined ? p.in_stock : p.inStock,
+        description: p.description,
+        features: p.features || [],
+        specs: p.specs || '',
+        contents: p.contents || '',
+        usage: p.usage || '',
+        images: p.images || []
+      }));
+      setProducts(formatted);
     }
-  });
+  };
 
   const [cart, setCart] = useState(() => {
     try {
@@ -424,8 +438,12 @@ export default function App() {
   };
 
   useEffect(() => {
+    loadProducts();
     loadOrders();
-    const interval = setInterval(loadOrders, 5000);
+    const interval = setInterval(() => {
+      loadProducts();
+      loadOrders();
+    }, 5000);
     return () => clearInterval(interval);
   }, []);
 
@@ -480,14 +498,6 @@ export default function App() {
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, [selectedProductId, isCartOpen, activeTab]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('salumea_products', JSON.stringify(products));
-    } catch (e) {
-      console.error(e);
-    }
-  }, [products]);
 
   useEffect(() => {
     try {
@@ -624,12 +634,21 @@ export default function App() {
     }
   };
 
-  const updateProductStock = (id, inStock) => {
+  const updateProductStock = async (id, inStock) => {
     setProducts(prev => prev.map(p => p.id === id ? { ...p, inStock } : p));
+    await fetchFromSupabase(`products?id=eq.${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ in_stock: inStock })
+    });
   };
 
-  const updateProductPrice = (id, price) => {
-    setProducts(prev => prev.map(p => p.id === id ? { ...p, price: Number(price) } : p));
+  const updateProductPrice = async (id, price) => {
+    const numPrice = Number(price);
+    setProducts(prev => prev.map(p => p.id === id ? { ...p, price: numPrice } : p));
+    await fetchFromSupabase(`products?id=eq.${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ price: numPrice })
+    });
   };
 
   const updateOrderStatus = async (orderId, status) => {
@@ -1269,8 +1288,8 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
               <div className="space-y-6">
                 <div className="flex items-center justify-between bg-white p-6 rounded-3xl border border-[#F5E6E8] shadow-sm">
                   <div>
-                    <h2 className="text-xl font-bold text-gray-900">لوحة تحكم المتجر (سحابية)</h2>
-                    <p className="text-xs text-gray-500 mt-0.5">الطلبات متزامنة لحظياً عبر قاعدة البيانات السحابية Supabase</p>
+                    <h2 className="text-xl font-bold text-gray-900">لوحة تحكم المتجر (سحابية 100%)</h2>
+                    <p className="text-xs text-gray-500 mt-0.5">المنتجات والطلبات متزامنة لحظياً عبر Supabase في جميع الأجهزة</p>
                   </div>
                   <button 
                     onClick={() => setIsAdminLoggedIn(false)}
