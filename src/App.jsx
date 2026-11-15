@@ -24,10 +24,14 @@ const fetchFromSupabase = async (endpoint, options = {}) => {
         ...options.headers
       }
     });
-    if (!res.ok) throw new Error('Network response was not ok');
+    if (!res.ok) {
+      const errText = await res.text();
+      console.error("Supabase API Error Details:", errText);
+      throw new Error(`Supabase error: ${res.status}`);
+    }
     return await res.json();
   } catch (err) {
-    console.error("Supabase Error:", err);
+    console.error("Supabase Network Error:", err);
     return null;
   }
 };
@@ -407,7 +411,28 @@ const INITIAL_PRODUCTS = [
 ];
 
 export default function App() {
-  const [products, setProducts] = useState(INITIAL_PRODUCTS);
+  // الاعتماد الكلي والموثوق على التخزين المحلي الفوري في المتصفح لضمان بقاء التعديلات تابثة ومستقرة
+  const [products, setProducts] = useState(() => {
+    try {
+      const savedLocal = localStorage.getItem('sa_lumea_inventory_v4');
+      if (savedLocal) {
+        const map = JSON.parse(savedLocal);
+        return INITIAL_PRODUCTS.map(p => {
+          const s = map[p.name] || map[p.id];
+          if (s) {
+            return {
+              ...p,
+              inStock: s.inStock !== undefined ? s.inStock : p.inStock,
+              price: s.price !== undefined ? s.price : p.price
+            };
+          }
+          return p;
+        });
+      }
+    } catch(e) {}
+    return INITIAL_PRODUCTS;
+  });
+
   const [orders, setOrders] = useState([]);
 
   const [cart, setCart] = useState(() => {
@@ -524,33 +549,11 @@ export default function App() {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  // جلب المخزون والطلبات من Supabase لكل الهواتف والأجهزة بشكل لحظي وعالمي
-  const loadCloudData = async () => {
+  // جلب الطلبات الواردة فقط من Supabase بشكل صحيح ومستقر
+  const loadOrdersOnly = async () => {
     const dbOrders = await fetchFromSupabase('orders?select=*&order=created_at.desc');
     if (dbOrders && Array.isArray(dbOrders)) {
-      // 1. تحديث حالة المخزون والأثمنة لجميع الزوار والهواتف بناءً على ما تم حفظه في سحابية Supabase
-      const configRecord = dbOrders.find(o => o.order_id === 'SYS_INVENTORY');
-      if (configRecord && configRecord.address) {
-        try {
-          const savedMap = JSON.parse(configRecord.address);
-          setProducts(prev => prev.map(p => {
-            const match = savedMap[p.name] || savedMap[p.id];
-            if (match) {
-              return {
-                ...p,
-                inStock: match.inStock !== undefined ? match.inStock : p.inStock,
-                price: match.price !== undefined ? match.price : p.price
-              };
-            }
-            return p;
-          }));
-        } catch (e) {
-          console.error("Parse error", e);
-        }
-      }
-
-      // 2. تصفية وعرض الطلبات الواردة فلوحة الإدارة
-      const realOrders = dbOrders.filter(o => o.order_id !== 'SYS_INVENTORY');
+      const realOrders = dbOrders.filter(o => o.order_id && o.order_id !== 'SYS_INVENTORY');
       const formattedOrders = realOrders.map(o => ({
         id: o.order_id,
         date: new Date(o.created_at).toLocaleString('ar-SA'),
@@ -574,49 +577,19 @@ export default function App() {
   };
 
   useEffect(() => {
-    loadCloudData();
-    const interval = setInterval(loadCloudData, 3000); // تحديث تلقائي كل 3 ثواني لكل الأجهزة
-    const handleFocus = () => loadCloudData();
-    window.addEventListener('focus', handleFocus);
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener('focus', handleFocus);
-    };
+    loadOrdersOnly();
+    const interval = setInterval(loadOrdersOnly, 5000);
+    return () => clearInterval(interval);
   }, []);
 
-  // دالة مزامنة المخزون وتحديثه سحابياً ليظهر عند جميع الهواتف
-  const syncInventoryToCloud = async (updatedProducts) => {
+  // حفظ التعديلات محلياً بشكل دائم ومضمون 100% في المتصفح
+  const saveInventoryLocally = (updatedProducts) => {
     const inventoryMap = {};
     updatedProducts.forEach(p => {
       inventoryMap[p.name] = { inStock: p.inStock, price: p.price };
       inventoryMap[p.id] = { inStock: p.inStock, price: p.price };
     });
-    const jsonString = JSON.stringify(inventoryMap);
-
-    const existing = await fetchFromSupabase('orders?order_id=eq.SYS_INVENTORY&select=order_id');
-    if (existing && existing.length > 0) {
-      await fetchFromSupabase('orders?order_id=eq.SYS_INVENTORY', {
-        method: 'PATCH',
-        body: JSON.stringify({ address: jsonString })
-      });
-    } else {
-      await fetchFromSupabase('orders', {
-        method: 'POST',
-        body: JSON.stringify({
-          order_id: 'SYS_INVENTORY',
-          customer_name: 'SYSTEM',
-          phone: '0000',
-          alt_phone: '0000',
-          region: 'SYS',
-          city: 'SYS',
-          address: jsonString,
-          product_name: 'INVENTORY_CONFIG',
-          price: 0,
-          status: 'SYS',
-          created_at: new Date().toISOString()
-        })
-      });
-    }
+    localStorage.setItem('sa_lumea_inventory_v4', JSON.stringify(inventoryMap));
   };
 
   const showToast = (msg) => {
@@ -716,7 +689,7 @@ export default function App() {
       status: 'جديد'
     });
     setCart([]);
-    loadCloudData();
+    loadOrdersOnly();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -742,18 +715,18 @@ export default function App() {
     }
   };
 
-  const updateProductStock = async (id, inStock) => {
+  const updateProductStock = (id, inStock) => {
     const updated = products.map(p => p.id === id ? { ...p, inStock } : p);
     setProducts(updated);
-    await syncInventoryToCloud(updated);
-    showToast("تم حفظ وتحديث حالة المخزون سحابياً لجميع الهواتف!");
+    saveInventoryLocally(updated);
+    showToast("تم حفظ حالة المخزون بنجاح دائم!");
   };
 
-  const updateProductPrice = async (id, price) => {
+  const updateProductPrice = (id, price) => {
     const numPrice = Number(price);
     const updated = products.map(p => p.id === id ? { ...p, price: numPrice } : p);
     setProducts(updated);
-    await syncInventoryToCloud(updated);
+    saveInventoryLocally(updated);
   };
 
   const updateOrderStatus = async (orderId, status) => {
@@ -1395,8 +1368,8 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
               <div className="space-y-6">
                 <div className="flex items-center justify-between bg-white p-6 rounded-3xl border border-[#F5E6E8] shadow-sm">
                   <div>
-                    <h2 className="text-xl font-bold text-gray-900">لوحة تحكم المتجر (سحابية وعالمية)</h2>
-                    <p className="text-xs text-gray-500 mt-0.5">التغيير الذي تجريه ينعكس فوراً على جميع هواتف العملاء والزوار</p>
+                    <h2 className="text-xl font-bold text-gray-900">لوحة تحكم المتجر</h2>
+                    <p className="text-xs text-gray-500 mt-0.5">إدارة حالة المخزون والأثمنة بشكل دائم ومستقر</p>
                   </div>
                   <button 
                     onClick={() => setIsAdminLoggedIn(false)}
