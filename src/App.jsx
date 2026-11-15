@@ -407,27 +407,7 @@ const INITIAL_PRODUCTS = [
 ];
 
 export default function App() {
-  const [products, setProducts] = useState(() => {
-    try {
-      const savedLocal = localStorage.getItem('sa_lumea_inventory_v5');
-      if (savedLocal) {
-        const map = JSON.parse(savedLocal);
-        return INITIAL_PRODUCTS.map(p => {
-          const s = map[p.id] || map[p.name];
-          if (s) {
-            return {
-              ...p,
-              inStock: s.inStock !== undefined ? s.inStock : p.inStock,
-              price: s.price !== undefined ? s.price : p.price
-            };
-          }
-          return p;
-        });
-      }
-    } catch(e) {}
-    return INITIAL_PRODUCTS;
-  });
-
+  const [products, setProducts] = useState(INITIAL_PRODUCTS);
   const [orders, setOrders] = useState([]);
 
   const [cart, setCart] = useState(() => {
@@ -544,10 +524,31 @@ export default function App() {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  const loadOrdersOnly = async () => {
-    const dbOrders = await fetchFromSupabase('orders?select=*&order=created_at.desc');
-    if (dbOrders && Array.isArray(dbOrders)) {
-      const realOrders = dbOrders.filter(o => o.order_id && o.order_id !== 'SYS_INVENTORY');
+  // جلب المخزون والطلبات سحابياً من Supabase لضمان التزامن الفوري بين جميع التليفونات
+  const loadDataFromCloud = async () => {
+    const data = await fetchFromSupabase('orders?select=*');
+    if (data && Array.isArray(data)) {
+      // 1. جلب المخزون المشترك
+      const inventoryRow = data.find(o => o.order_id === 'SYS_INVENTORY_SYNC_V6');
+      if (inventoryRow && inventoryRow.address) {
+        try {
+          const cloudMap = JSON.parse(inventoryRow.address);
+          setProducts(prev => prev.map(p => {
+            const s = cloudMap[p.id] || cloudMap[p.name];
+            if (s) {
+              return {
+                ...p,
+                inStock: s.inStock !== undefined ? s.inStock : p.inStock,
+                price: s.price !== undefined ? s.price : p.price
+              };
+            }
+            return p;
+          }));
+        } catch(e) {}
+      }
+
+      // 2. جلب الطلبات
+      const realOrders = data.filter(o => o.order_id && o.order_id !== 'SYS_INVENTORY_SYNC_V6');
       const formattedOrders = realOrders.map(o => ({
         id: o.order_id,
         date: new Date(o.created_at).toLocaleString('ar-SA'),
@@ -571,18 +572,41 @@ export default function App() {
   };
 
   useEffect(() => {
-    loadOrdersOnly();
-    const interval = setInterval(loadOrdersOnly, 5000);
+    loadDataFromCloud();
+    const interval = setInterval(loadDataFromCloud, 4000);
     return () => clearInterval(interval);
   }, []);
 
-  const saveInventoryLocally = (updatedProducts) => {
+  // حفظ التعديلات سحابياً في Supabase لتظهر في جميع الهواتف فوراً
+  const saveInventoryToCloud = async (updatedProducts) => {
     const inventoryMap = {};
     updatedProducts.forEach(p => {
       inventoryMap[p.id] = { inStock: p.inStock, price: p.price };
       inventoryMap[p.name] = { inStock: p.inStock, price: p.price };
     });
-    localStorage.setItem('sa_lumea_inventory_v5', JSON.stringify(inventoryMap));
+
+    const payload = {
+      order_id: 'SYS_INVENTORY_SYNC_V6',
+      customer_name: 'CLOUD_SYNC',
+      phone: '0000000000',
+      alt_phone: 'SYS',
+      region: 'SYS',
+      city: 'SYS',
+      address: JSON.stringify(inventoryMap),
+      product_name: 'Inventory Sync Data',
+      price: 0,
+      status: 'SYS',
+      created_at: new Date().toISOString()
+    };
+
+    // Upsert to Supabase
+    await fetchFromSupabase('orders?order_id=eq.SYS_INVENTORY_SYNC_V6', {
+      method: 'DELETE'
+    });
+    await fetchFromSupabase('orders', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
   };
 
   const showToast = (msg) => {
@@ -682,7 +706,7 @@ export default function App() {
       status: 'جديد'
     });
     setCart([]);
-    loadOrdersOnly();
+    loadDataFromCloud();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -711,15 +735,15 @@ export default function App() {
   const updateProductStock = (id, inStock) => {
     const updated = products.map(p => p.id === id ? { ...p, inStock } : p);
     setProducts(updated);
-    saveInventoryLocally(updated);
-    showToast("تم حفظ حالة المخزون بنجاح دائم!");
+    saveInventoryToCloud(updated);
+    showToast("تم مزامنة وحفظ المخزون سحابياً بنجاح!");
   };
 
   const updateProductPrice = (id, price) => {
     const numPrice = Number(price);
     const updated = products.map(p => p.id === id ? { ...p, price: numPrice } : p);
     setProducts(updated);
-    saveInventoryLocally(updated);
+    saveInventoryToCloud(updated);
   };
 
   const updateOrderStatus = async (orderId, status) => {
@@ -1362,7 +1386,7 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
                 <div className="flex items-center justify-between bg-white p-6 rounded-3xl border border-[#F5E6E8] shadow-sm">
                   <div>
                     <h2 className="text-xl font-bold text-gray-900">لوحة تحكم المتجر</h2>
-                    <p className="text-xs text-gray-500 mt-0.5">إدارة المخزون والأثمنة بشكل دائم وثابت ومستقر</p>
+                    <p className="text-xs text-gray-500 mt-0.5">إدارة المخزون والأثمنة سحابياً لتتزامن فوراً في جميع الهواتف</p>
                   </div>
                   <button 
                     onClick={() => setIsAdminLoggedIn(false)}
