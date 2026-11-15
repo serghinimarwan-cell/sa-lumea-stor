@@ -71,22 +71,6 @@ const INITIAL_PRODUCTS = [
   {
     id: 3,
     category: "العناية بالبشرة",
-    name: "سيروم فيتامين سي طبيعي SADOER",
-    price: 120,
-    inStock: true,
-    description: "سيروم فيتامين سي من SADOER للعناية بالبشرة وتوحيد لونها وإعادة الحيوية إليها.",
-    features: ["مضاد لأكسدة البشرة", "يعزز الإشراق والترطيب", "سريع الامتصاص"],
-    specs: "30 ml",
-    contents: "عبوة سيروم 30 مل",
-    usage: "توضع بضع قطرات على الوجه والرقبة صباحاً ومساءً.",
-    images: [
-      "https://media.taager.com/ac7d39c2-f5dc-43df-9a4a-db73d8003dc0.jpg",
-      "https://media.taager.com/736b5dd8-1e09-4f9a-ac2e-85611b7f9037.jpg",
-      "https://media.taager.com/d8398199-326f-4f04-9cab-6b754f566bd5.jpg"
-    ]
-  },
-  {
-    العناية بالبشرة",
     name: "بكج ساكورا الوردي بفيتامين سي لتفتيح مضاعف وتصفية البشرة (6 قطع)",
     price: 170,
     inStock: true,
@@ -103,7 +87,13 @@ const INITIAL_PRODUCTS = [
     specs: "العدد 6 قطع | سيروم 17مل، منظف 50غ، تونر 100مل، كريم وجه 30غ، كريم عين 15غ، واقي شمس 30غ",
     contents: "1 × سيروم مرطب 17مل، 1 × منظف 50غ، 1 × تونر 100مل، 1 × كريم وجه 30غ، 1 × كريم عين 15غ، 1 × واقي شمس 30غ",
     usage: "المنظف ضع كمية على الوجه المبلل ودلك بلطف ثم اشطف بالماء. التونر ضع على قطعة قطن وامسح الوجه بلطف. السيروم ضع قطرات على الوجه والرقبة ودلك حتى يمتص. كريم الوجه ضع كمية مناسبة ودلك بحركات تصاعدية. كريم العين ضع قليل حول العين ودلك بلطف. واقي الشمس ضع قبل التعرض للشمس ووزع بالتساوي على الوجه.",
-    images: ["https://media.taager.com/b91a877a-a677-424a-98c8-1fba186b0379.jpg"]
+    images: [
+      "https://media.taager.com/b91a877a-a677-424a-98c8-1fba186b0379.jpg",
+      "https://media.taager.com/0b491961-1aa4-422f-8499-90688c7ca2c6.jpg",
+      "https://media.taager.com/b8b3ccfa-e6f3-41e1-a4a2-eee1f4d2672e.jpg",
+      "https://media.taager.com/3ca7f12d-becb-4a4c-ab82-a11fe1ce830f.jpg",
+      "https://media.taager.com/7442a5fa-c887-4789-a17c-6d4e64e0c124.png"
+    ]
   },
   {
     id: 4,
@@ -123,7 +113,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 4,
+    id: 5,
     category: "العناية بالبشرة",
     name: "إيكوالبيري الأزرق – سيروم هيالتوين المغذي 30 مل",
     price: 123,
@@ -141,7 +131,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 5,
+    id: 6,
     category: "العناية بالبشرة",
     name: "عرض 3 من صابون حمض الكوجيك الكوري",
     price: 160,
@@ -162,7 +152,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 6,
+    id: 7,
     category: "العناية بالبشرة",
     name: "جهاز مساج الوجه للتصريف اللمفاوي",
     price: 124,
@@ -180,7 +170,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 7,
+    id: 8,
     category: "العناية بالبشرة",
     name: "صابون حمض الكوجيك الكوري – قطعة واحدة",
     price: 113,
@@ -200,7 +190,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 8,
+    id: 9,
     category: "العناية بالجسم",
     name: "لوشن كولاجين ليفت 10X لشد الترهلات – 300 غرام",
     price: 139,
@@ -217,7 +207,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 9,
+    id: 10,
     category: "العناية بالجسم",
     name: "مجموعة فلاتر شاور معطرة – 4 روائح",
     price: 153,
@@ -238,7 +228,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 10,
+    id: 11,
     category: "العناية بالجسم",
     name: "عرض 2 من غسول كير كول للمناطق الحساسة – 215 مل",
     price: 149,
@@ -251,7 +241,7 @@ const INITIAL_PRODUCTS = [
     images: ["https://media.taager.com/12f0fb13-544b-444d-af6b-bb637da10c90.jpg"]
   },
   {
-    id: 11,
+    id: 12,
     category: "العناية بالجسم",
     name: "غسول كير كول للمناطق الحساسة بخلاصة النيلة الزرقاء",
     price: 130,
@@ -267,7 +257,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 12,
+    id: 13,
     category: "العناية بالجسم",
     name: "غسول كير كول للمناطق الحساسة بخلاصة عكر فاسي",
     price: 130,
@@ -284,7 +274,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 13,
+    id: 14,
     category: "العناية بالشعر",
     name: "عرض 6 من زيت الشعر 108 عشبة الهندي",
     price: 199,
@@ -302,7 +292,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 14,
+    id: 15,
     category: "العناية بالشعر",
     name: "زيت الشعر 108 عشبة الهندي – تركيبة جديدة – 250 مل",
     price: 118,
@@ -318,7 +308,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 15,
+    id: 16,
     category: "العناية بالشعر",
     name: "باندل العناية والتصفيف: زيت الأعشاب 1 لتر + مصفف الشعر",
     price: 229,
@@ -331,7 +321,7 @@ const INITIAL_PRODUCTS = [
     images: ["https://media.taager.com/4058d6e0-7860-412c-83e9-a2fbf1ee6fe3.jpg"]
   },
   {
-    id: 16,
+    id: 17,
     category: "العناية بالشعر",
     name: "زيت الأعشاب الهندية لحماية الشعر – 1 لتر",
     price: 153,
@@ -348,7 +338,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 17,
+    id: 18,
     category: "العناية بالشعر",
     name: "مصفف الشعر المزدوج 2 في 1 برأسين للتبديل",
     price: 170,
@@ -366,7 +356,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 18,
+    id: 19,
     category: "العناية بالشعر",
     name: "بكج دلال وتكثيف الشعر بالباتانا",
     price: 169,
@@ -379,7 +369,7 @@ const INITIAL_PRODUCTS = [
     images: ["https://media.taager.com/d90a1a6b-e2be-46bc-bf02-87585b3a01b2.jpg"]
   },
   {
-    id: 19,
+    id: 20,
     category: "العناية بالشعر",
     name: "مجموعة الباتانا: شامبو وبلسم وزيت وماسك",
     price: 142,
@@ -398,7 +388,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 20,
+    id: 21,
     category: "العناية بالشعر",
     name: "فرشاة تمليس الشعر بالبخار المضادة للحروق – JY-603",
     price: 130,
@@ -418,14 +408,129 @@ const INITIAL_PRODUCTS = [
 
 export default function App() {
   const [products, setProducts] = useState(INITIAL_PRODUCTS);
-  const [cart, setCart] = useState([]);
   const [orders, setOrders] = useState([]);
 
-  // جلب الطلبات + إعدادات المخزون والأسعار السحابية من جدول orders المضمون 100%
+  // حفظ السلة والصفحة الحالية والمنتج في localStorage للبقاء في نفس المكان عند التحديث
+  const [cart, setCart] = useState(() => {
+    try {
+      const saved = localStorage.getItem('sa_lumea_cart');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const [currentCategory, setCurrentCategory] = useState(() => {
+    return localStorage.getItem('sa_lumea_category') || "الكل";
+  });
+
+  const [selectedProductId, setSelectedProductId] = useState(() => {
+    const hash = window.location.hash;
+    if (hash.startsWith('#product/')) {
+      return Number(hash.replace('#product/', '')) || null;
+    }
+    const saved = localStorage.getItem('sa_lumea_productId');
+    return saved ? Number(saved) : null;
+  });
+
+  const [activeTab, setActiveTab] = useState(() => {
+    const hash = window.location.hash.replace('#', '');
+    if (hash.startsWith('product/')) return 'product';
+    if (['home', 'checkout', 'admin'].includes(hash)) return hash;
+    return localStorage.getItem('sa_lumea_tab') || 'home';
+  });
+
+  const [activeImageIndex, setActiveImageIndex] = useState(0); 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [copiedId, setCopiedId] = useState(null);
+  const [toastMessage, setToastMessage] = useState(null);
+  
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+  const [adminPassword, setAdminPassword] = useState('');
+  const [adminError, setAdminError] = useState('');
+
+  const [checkoutData, setCheckoutData] = useState({
+    fullName: '',
+    phone: '',
+    extraPhone: '',
+    region: 'الرياض',
+    city: '',
+    district: '',
+    street: '',
+    buildingNo: '',
+    nationalAddress: ''
+  });
+  const [checkoutError, setCheckoutError] = useState('');
+  const [orderSuccess, setOrderSuccess] = useState(null);
+
+  // دالة مساعدة للتنقل مع تسجيل الصفحة في تاريخ المتصفح (حل مشكلة زر الرجوع)
+  const navigateTo = (tab, productId = null) => {
+    setActiveTab(tab);
+    setSelectedProductId(productId);
+    if (tab === 'product' && productId) {
+      window.location.hash = `product/${productId}`;
+    } else {
+      window.location.hash = tab;
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // حفظ البيانات تلقائياً في localStorage عند أي تغيير
+  useEffect(() => {
+    localStorage.setItem('sa_lumea_cart', JSON.stringify(cart));
+  }, [cart]);
+
+  useEffect(() => {
+    localStorage.setItem('sa_lumea_category', currentCategory);
+  }, [currentCategory]);
+
+  useEffect(() => {
+    localStorage.setItem('sa_lumea_tab', activeTab);
+    if (selectedProductId) {
+      localStorage.setItem('sa_lumea_productId', String(selectedProductId));
+    } else {
+      localStorage.removeItem('sa_lumea_productId');
+    }
+  }, [activeTab, selectedProductId]);
+
+  // الاستماع لزر الرجوع (Back) في المتصفح والهاتف
+  useEffect(() => {
+    if (!window.location.hash) {
+      const initialHash = activeTab === 'product' && selectedProductId 
+        ? `product/${selectedProductId}` 
+        : activeTab;
+      window.history.replaceState(null, '', `#${initialHash}`);
+    }
+
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '');
+      if (hash.startsWith('product/')) {
+        const id = Number(hash.split('/')[1]);
+        if (id) {
+          setSelectedProductId(id);
+          setActiveImageIndex(0);
+          setActiveTab('product');
+        }
+      } else if (['checkout', 'admin', 'home'].includes(hash)) {
+        setActiveTab(hash);
+        setSelectedProductId(null);
+      } else {
+        setActiveTab('home');
+        setSelectedProductId(null);
+      }
+      setIsCartOpen(false);
+      setIsMenuOpen(false);
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
   const loadData = async () => {
     const dbOrders = await fetchFromSupabase('orders?select=*&order=created_at.desc');
     if (dbOrders && Array.isArray(dbOrders)) {
-      // 1. البحث عن سجل إعدادات المنتجات المخفي (SYS_INVENTORY)
       const configRecord = dbOrders.find(o => o.order_id === 'SYS_INVENTORY');
       if (configRecord && configRecord.address) {
         try {
@@ -445,7 +550,6 @@ export default function App() {
         }
       }
 
-      // 2. فلترة الطلبات الحقيقية للزبائن (استبعاد السجل المخفي)
       const realOrders = dbOrders.filter(o => o.order_id !== 'SYS_INVENTORY');
       const formattedOrders = realOrders.map(o => ({
         id: o.order_id,
@@ -480,7 +584,6 @@ export default function App() {
     };
   }, []);
 
-  // حفظ حالة المخزون والأسعار في Supabase فوراً
   const syncInventoryToCloud = async (updatedProducts) => {
     const inventoryMap = {};
     updatedProducts.forEach(p => {
@@ -488,7 +591,6 @@ export default function App() {
     });
     const jsonString = JSON.stringify(inventoryMap);
 
-    // التحقق هل السجل موجود مسبقاً أم ننشئه
     const existing = await fetchFromSupabase('orders?order_id=eq.SYS_INVENTORY&select=order_id');
     if (existing && existing.length > 0) {
       await fetchFromSupabase('orders?order_id=eq.SYS_INVENTORY', {
@@ -514,35 +616,6 @@ export default function App() {
       });
     }
   };
-
-  const [currentCategory, setCurrentCategory] = useState("الكل");
-  const [selectedProductId, setSelectedProductId] = useState(null);
-  const [activeImageIndex, setActiveImageIndex] = useState(0); 
-  const [activeTab, setActiveTab] = useState('home'); 
-  
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [copiedId, setCopiedId] = useState(null);
-  const [toastMessage, setToastMessage] = useState(null);
-  
-  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
-  const [adminPassword, setAdminPassword] = useState('');
-  const [adminError, setAdminError] = useState('');
-
-  const [checkoutData, setCheckoutData] = useState({
-    fullName: '',
-    phone: '',
-    extraPhone: '',
-    region: 'الرياض',
-    city: '',
-    district: '',
-    street: '',
-    buildingNo: '',
-    nationalAddress: ''
-  });
-  const [checkoutError, setCheckoutError] = useState('');
-  const [orderSuccess, setOrderSuccess] = useState(null);
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -572,8 +645,7 @@ export default function App() {
       }
       return [...prev, { ...product, quantity: 1 }];
     });
-    setActiveTab('checkout');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    navigateTo('checkout');
   };
 
   const updateCartQuantity = (id, newQty) => {
@@ -597,10 +669,8 @@ export default function App() {
   }, [cart]);
 
   const openProductDetails = (id) => {
-    setSelectedProductId(id);
     setActiveImageIndex(0); 
-    setActiveTab('product');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    navigateTo('product', id);
   };
 
   const handlePlaceOrder = async (e) => {
@@ -742,7 +812,7 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
               </button>
             </div>
 
-            <div className="flex-1 md:flex-none text-center md:text-right cursor-pointer" onClick={() => { setActiveTab('home'); setSelectedProductId(null); setOrderSuccess(null); }}>
+            <div className="flex-1 md:flex-none text-center md:text-right cursor-pointer" onClick={() => { setOrderSuccess(null); navigateTo('home'); }}>
               <div className="inline-flex items-center gap-3">
                 <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#C26D85] via-[#D4AF37] to-[#FDE0E7] p-0.5 shadow-md flex items-center justify-center">
                   <div className="w-full h-full bg-white rounded-full flex items-center justify-center p-1">
@@ -759,25 +829,25 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
 
             <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
               <button 
-                onClick={() => { setActiveTab('home'); setCurrentCategory('الكل'); setSelectedProductId(null); setOrderSuccess(null); }}
+                onClick={() => { setCurrentCategory('الكل'); setOrderSuccess(null); navigateTo('home'); }}
                 className={`hover:text-[#C26D85] transition-colors ${activeTab === 'home' && currentCategory === 'الكل' && selectedProductId === null ? 'text-[#C26D85] font-bold border-b-2 border-[#C26D85] pb-1' : 'text-gray-700'}`}
               >
                 الرئيسية
               </button>
               <button 
-                onClick={() => { setActiveTab('home'); setCurrentCategory('العناية بالبشرة'); setSelectedProductId(null); setOrderSuccess(null); }}
+                onClick={() => { setCurrentCategory('العناية بالبشرة'); setOrderSuccess(null); navigateTo('home'); }}
                 className={`hover:text-[#C26D85] transition-colors ${currentCategory === 'العناية بالبشرة' && selectedProductId === null ? 'text-[#C26D85] font-bold border-b-2 border-[#C26D85] pb-1' : 'text-gray-700'}`}
               >
                 العناية بالبشرة
               </button>
               <button 
-                onClick={() => { setActiveTab('home'); setCurrentCategory('العناية بالجسم'); setSelectedProductId(null); setOrderSuccess(null); }}
+                onClick={() => { setCurrentCategory('العناية بالجسم'); setOrderSuccess(null); navigateTo('home'); }}
                 className={`hover:text-[#C26D85] transition-colors ${currentCategory === 'العناية بالجسم' && selectedProductId === null ? 'text-[#C26D85] font-bold border-b-2 border-[#C26D85] pb-1' : 'text-gray-700'}`}
               >
                 العناية بالجسم
               </button>
               <button 
-                onClick={() => { setActiveTab('home'); setCurrentCategory('العناية بالشعر'); setSelectedProductId(null); setOrderSuccess(null); }}
+                onClick={() => { setCurrentCategory('العناية بالشعر'); setOrderSuccess(null); navigateTo('home'); }}
                 className={`hover:text-[#C26D85] transition-colors ${currentCategory === 'العناية بالشعر' && selectedProductId === null ? 'text-[#C26D85] font-bold border-b-2 border-[#C26D85] pb-1' : 'text-gray-700'}`}
               >
                 العناية بالشعر
@@ -799,7 +869,7 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
               </button>
 
               <button
-                onClick={() => { setActiveTab('admin'); setOrderSuccess(null); }}
+                onClick={() => { setOrderSuccess(null); navigateTo('admin'); }}
                 className="p-2 text-gray-500 hover:text-[#C26D85] transition-colors text-xs flex items-center gap-1 border border-gray-200 rounded-lg px-3 py-1.5"
               >
                 <Lock className="w-3.5 h-3.5" />
@@ -813,25 +883,25 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
         {isMenuOpen && (
           <div className="md:hidden bg-white border-b border-[#F5E6E8] px-4 pt-2 pb-4 space-y-2">
             <button 
-              onClick={() => { setActiveTab('home'); setCurrentCategory('الكل'); setSelectedProductId(null); setIsMenuOpen(false); setOrderSuccess(null); }}
+              onClick={() => { setCurrentCategory('الكل'); setIsMenuOpen(false); setOrderSuccess(null); navigateTo('home'); }}
               className="block w-full text-right px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-[#FDF4F5] hover:text-[#C26D85]"
             >
               الرئيسية (جميع المنتجات)
             </button>
             <button 
-              onClick={() => { setActiveTab('home'); setCurrentCategory('العناية بالبشرة'); setSelectedProductId(null); setIsMenuOpen(false); setOrderSuccess(null); }}
+              onClick={() => { setCurrentCategory('العناية بالبشرة'); setIsMenuOpen(false); setOrderSuccess(null); navigateTo('home'); }}
               className="block w-full text-right px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-[#FDF4F5] hover:text-[#C26D85]"
             >
               العناية بالبشرة
             </button>
             <button 
-              onClick={() => { setActiveTab('home'); setCurrentCategory('العناية بالجسم'); setSelectedProductId(null); setIsMenuOpen(false); setOrderSuccess(null); }}
+              onClick={() => { setCurrentCategory('العناية بالجسم'); setIsMenuOpen(false); setOrderSuccess(null); navigateTo('home'); }}
               className="block w-full text-right px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-[#FDF4F5] hover:text-[#C26D85]"
             >
               العناية بالجسم
             </button>
             <button 
-              onClick={() => { setActiveTab('home'); setCurrentCategory('العناية بالشعر'); setSelectedProductId(null); setIsMenuOpen(false); setOrderSuccess(null); }}
+              onClick={() => { setCurrentCategory('العناية بالشعر'); setIsMenuOpen(false); setOrderSuccess(null); navigateTo('home'); }}
               className="block w-full text-right px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-[#FDF4F5] hover:text-[#C26D85]"
             >
               العناية بالشعر
@@ -984,7 +1054,7 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
         {activeTab === 'product' && selectedProduct && (
           <div className="space-y-6">
             <button
-              onClick={() => { setActiveTab('home'); setSelectedProductId(null); }}
+              onClick={() => navigateTo('home')}
               className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-[#C26D85] font-medium"
             >
               <ArrowRight className="w-4 h-4"/>
@@ -1262,7 +1332,7 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
               <div className="flex gap-3 pt-2">
                 <button
                   type="button"
-                  onClick={() => setActiveTab('home')}
+                  onClick={() => navigateTo('home')}
                   className="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-sm transition-all"
                 >
                   العودة للتسوق
@@ -1475,7 +1545,7 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
               </div>
 
               <button
-                onClick={() => { setOrderSuccess(null); setActiveTab('home'); }}
+                onClick={() => { setOrderSuccess(null); navigateTo('home'); }}
                 className="w-full py-3.5 bg-[#C26D85] hover:bg-[#b05c73] text-white font-bold rounded-xl text-sm shadow-md transition-all"
               >
                 العودة إلى المتجر
@@ -1561,7 +1631,7 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
                   </div>
 
                   <button
-                    onClick={() => { setIsCartOpen(false); setActiveTab('checkout'); }}
+                    onClick={() => { setIsCartOpen(false); navigateTo('checkout'); }}
                     className="w-full py-3.5 bg-[#C26D85] hover:bg-[#b05c73] text-white font-bold rounded-2xl shadow-md transition-all text-sm flex items-center justify-center gap-2"
                   >
                     <span>إتمام الطلب (الدفع عند الاستلام)</span>
