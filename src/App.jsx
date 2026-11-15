@@ -12,7 +12,9 @@ const SUPABASE_KEY = "sb_publishable_n_CFQHNUEOX_WagvE6cs6g_KW3hJtjK";
 
 const fetchFromSupabase = async (endpoint, options = {}) => {
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, {
+    const separator = endpoint.includes('?') ? '&' : '?';
+    const timestampUrl = `${SUPABASE_URL}/rest/v1/${endpoint}${separator}_t=${Date.now()}`;
+    const res = await fetch(timestampUrl, {
       ...options,
       headers: {
         'apikey': SUPABASE_KEY,
@@ -69,6 +71,27 @@ const INITIAL_PRODUCTS = [
   {
     id: 3,
     category: "العناية بالبشرة",
+    name: "بكج ساكورا الوردي بفيتامين سي لتفتيح مضاعف وتصفية البشرة (6 قطع)",
+    price: 170,
+    inStock: true,
+    description: "مجموعة ساكورا الوردي المتكاملة بفيتامين سي لتفتيح مضاعف، ترطيب عميق، وتصفية البشرة.",
+    features: [
+      "ترطيب عميق يرطب بشرتك وينعشها طول اليوم",
+      "إشراقة طبيعية تفتيح البشرة يعطيك إشراقة صحية",
+      "مكافحة التجاعيد يقلل الخطوط الدقيقة ويشد البشرة",
+      "تنظيف لطيف يزيل الأوساخ والمكياج بلطف",
+      "تحضير البشرة التونر يهيئ البشرة لامتصاص المنتجات",
+      "عناية العين يقلل الهالات السوداء والانتفاخ",
+      "يحتوي على مستخلص الساكورا لتجديد البشرة ومناسب لجميع أنواع البشرة"
+    ],
+    specs: "العدد 6 قطع | سيروم 17مل، منظف 50غ، تونر 100مل، كريم وجه 30غ، كريم عين 15غ، واقي شمس 30غ",
+    contents: "1 × سيروم مرطب 17مل، 1 × منظف 50غ، 1 × تونر 100مل، 1 × كريم وجه 30غ، 1 × كريم عين 15غ، 1 × واقي شمس 30غ",
+    usage: "المنظف ضع كمية على الوجه المبلل ودلك بلطف ثم اشطف بالماء. التونر ضع على قطعة قطن وامسح الوجه بلطف. السيروم ضع قطرات على الوجه والرقبة ودلك حتى يمتص. كريم الوجه ضع كمية مناسبة ودلك بحركات تصاعدية. كريم العين ضع قليل حول العين ودلك بلطف. واقي الشمس ضع قبل التعرض للشمس ووزع بالتساوي على الوجه.",
+    images: ["https://media.taager.com/b91a877a-a677-424a-98c8-1fba186b0379.jpg"]
+  },
+  {
+    id: 4,
+    category: "العناية بالبشرة",
     name: "سيروم فيتامين سي طبيعي SADOER",
     price: 120,
     inStock: true,
@@ -84,7 +107,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 4,
+    id: 5,
     category: "العناية بالبشرة",
     name: "إيكوالبيري الأزرق – سيروم هيالتوين المغذي 30 مل",
     price: 123,
@@ -102,7 +125,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 5,
+    id: 6,
     category: "العناية بالبشرة",
     name: "عرض 3 من صابون حمض الكوجيك الكوري",
     price: 160,
@@ -123,7 +146,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 6,
+    id: 7,
     category: "العناية بالبشرة",
     name: "جهاز مساج الوجه للتصريف اللمفاوي",
     price: 124,
@@ -141,7 +164,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 7,
+    id: 8,
     category: "العناية بالبشرة",
     name: "صابون حمض الكوجيك الكوري – قطعة واحدة",
     price: 113,
@@ -161,7 +184,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 8,
+    id: 9,
     category: "العناية بالجسم",
     name: "لوشن كولاجين ليفت 10X لشد الترهلات – 300 غرام",
     price: 139,
@@ -178,7 +201,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 9,
+    id: 10,
     category: "العناية بالجسم",
     name: "مجموعة فلاتر شاور معطرة – 4 روائح",
     price: 153,
@@ -199,7 +222,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 10,
+    id: 11,
     category: "العناية بالجسم",
     name: "عرض 2 من غسول كير كول للمناطق الحساسة – 215 مل",
     price: 149,
@@ -212,7 +235,7 @@ const INITIAL_PRODUCTS = [
     images: ["https://media.taager.com/12f0fb13-544b-444d-af6b-bb637da10c90.jpg"]
   },
   {
-    id: 11,
+    id: 12,
     category: "العناية بالجسم",
     name: "غسول كير كول للمناطق الحساسة بخلاصة النيلة الزرقاء",
     price: 130,
@@ -228,7 +251,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 12,
+    id: 13,
     category: "العناية بالجسم",
     name: "غسول كير كول للمناطق الحساسة بخلاصة عكر فاسي",
     price: 130,
@@ -245,7 +268,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 13,
+    id: 14,
     category: "العناية بالشعر",
     name: "عرض 6 من زيت الشعر 108 عشبة الهندي",
     price: 199,
@@ -263,7 +286,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 14,
+    id: 15,
     category: "العناية بالشعر",
     name: "زيت الشعر 108 عشبة الهندي – تركيبة جديدة – 250 مل",
     price: 118,
@@ -279,7 +302,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 15,
+    id: 16,
     category: "العناية بالشعر",
     name: "باندل العناية والتصفيف: زيت الأعشاب 1 لتر + مصفف الشعر",
     price: 229,
@@ -292,7 +315,7 @@ const INITIAL_PRODUCTS = [
     images: ["https://media.taager.com/4058d6e0-7860-412c-83e9-a2fbf1ee6fe3.jpg"]
   },
   {
-    id: 16,
+    id: 17,
     category: "العناية بالشعر",
     name: "زيت الأعشاب الهندية لحماية الشعر – 1 لتر",
     price: 153,
@@ -309,7 +332,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 17,
+    id: 18,
     category: "العناية بالشعر",
     name: "مصفف الشعر المزدوج 2 في 1 برأسين للتبديل",
     price: 170,
@@ -327,7 +350,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 18,
+    id: 19,
     category: "العناية بالشعر",
     name: "بكج دلال وتكثيف الشعر بالباتانا",
     price: 169,
@@ -340,7 +363,7 @@ const INITIAL_PRODUCTS = [
     images: ["https://media.taager.com/d90a1a6b-e2be-46bc-bf02-87585b3a01b2.jpg"]
   },
   {
-    id: 19,
+    id: 20,
     category: "العناية بالشعر",
     name: "مجموعة الباتانا: شامبو وبلسم وزيت وماسك",
     price: 142,
@@ -359,7 +382,7 @@ const INITIAL_PRODUCTS = [
     ]
   },
   {
-    id: 20,
+    id: 21,
     category: "العناية بالشعر",
     name: "فرشاة تمليس الشعر بالبخار المضادة للحروق – JY-603",
     price: 130,
@@ -378,30 +401,34 @@ const INITIAL_PRODUCTS = [
 ];
 
 export default function App() {
-  const [products, setProducts] = useState(() => {
-    try {
-      const saved = localStorage.getItem('salumea_products');
-      return saved ? JSON.parse(saved) : INITIAL_PRODUCTS;
-    } catch {
-      return INITIAL_PRODUCTS;
-    }
-  });
-
-  const [cart, setCart] = useState(() => {
-    try {
-      const saved = localStorage.getItem('salumea_cart');
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
-
+  const [products, setProducts] = useState(INITIAL_PRODUCTS);
+  const [cart, setCart] = useState([]);
   const [orders, setOrders] = useState([]);
-  
-  const loadOrders = async () => {
-    const data = await fetchFromSupabase('orders?select=*&order=created_at.desc');
-    if (data && Array.isArray(data)) {
-      const formattedOrders = data.map(o => ({
+
+  const loadData = async () => {
+    const dbOrders = await fetchFromSupabase('orders?select=*&order=created_at.desc');
+    if (dbOrders && Array.isArray(dbOrders)) {
+      const configRecord = dbOrders.find(o => o.order_id === 'SYS_INVENTORY');
+      if (configRecord && configRecord.address) {
+        try {
+          const savedMap = JSON.parse(configRecord.address);
+          setProducts(prev => prev.map(p => {
+            if (savedMap[p.id]) {
+              return {
+                ...p,
+                inStock: savedMap[p.id].inStock !== undefined ? savedMap[p.id].inStock : p.inStock,
+                price: savedMap[p.id].price !== undefined ? savedMap[p.id].price : p.price
+              };
+            }
+            return p;
+          }));
+        } catch (e) {
+          console.error("Parse error", e);
+        }
+      }
+
+      const realOrders = dbOrders.filter(o => o.order_id !== 'SYS_INVENTORY');
+      const formattedOrders = realOrders.map(o => ({
         id: o.order_id,
         date: new Date(o.created_at).toLocaleString('ar-SA'),
         customer: {
@@ -424,10 +451,48 @@ export default function App() {
   };
 
   useEffect(() => {
-    loadOrders();
-    const interval = setInterval(loadOrders, 5000);
-    return () => clearInterval(interval);
+    loadData();
+    const interval = setInterval(loadData, 3000);
+    const handleFocus = () => loadData();
+    window.addEventListener('focus', handleFocus);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', handleFocus);
+    };
   }, []);
+
+  const syncInventoryToCloud = async (updatedProducts) => {
+    const inventoryMap = {};
+    updatedProducts.forEach(p => {
+      inventoryMap[p.id] = { inStock: p.inStock, price: p.price };
+    });
+    const jsonString = JSON.stringify(inventoryMap);
+
+    const existing = await fetchFromSupabase('orders?order_id=eq.SYS_INVENTORY&select=order_id');
+    if (existing && existing.length > 0) {
+      await fetchFromSupabase('orders?order_id=eq.SYS_INVENTORY', {
+        method: 'PATCH',
+        body: JSON.stringify({ address: jsonString })
+      });
+    } else {
+      await fetchFromSupabase('orders', {
+        method: 'POST',
+        body: JSON.stringify({
+          order_id: 'SYS_INVENTORY',
+          customer_name: 'SYSTEM',
+          phone: '0000',
+          alt_phone: '0000',
+          region: 'SYS',
+          city: 'SYS',
+          address: jsonString,
+          product_name: 'INVENTORY_CONFIG',
+          price: 0,
+          status: 'SYS',
+          created_at: new Date().toISOString()
+        })
+      });
+    }
+  };
 
   const [currentCategory, setCurrentCategory] = useState("الكل");
   const [selectedProductId, setSelectedProductId] = useState(null);
@@ -464,38 +529,6 @@ export default function App() {
       setToastMessage(null);
     }, 3000);
   };
-
-  useEffect(() => {
-    const handlePopState = () => {
-      if (selectedProductId !== null) {
-        setSelectedProductId(null);
-        setActiveTab('home');
-      } else if (isCartOpen) {
-        setIsCartOpen(false);
-      } else if (activeTab !== 'home') {
-        setActiveTab('home');
-      }
-    };
-
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, [selectedProductId, isCartOpen, activeTab]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('salumea_products', JSON.stringify(products));
-    } catch (e) {
-      console.error(e);
-    }
-  }, [products]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('salumea_cart', JSON.stringify(cart));
-    } catch (e) {
-      console.error(e);
-    }
-  }, [cart]);
 
   const addToCart = (product, quantity = 1) => {
     if (!product || !product.inStock) return;
@@ -543,11 +576,6 @@ export default function App() {
   }, [cart]);
 
   const openProductDetails = (id) => {
-    try {
-      window.history.pushState({ view: 'product' }, '');
-    } catch (e) {
-      console.error(e);
-    }
     setSelectedProductId(id);
     setActiveImageIndex(0); 
     setActiveTab('product');
@@ -586,19 +614,16 @@ export default function App() {
       body: JSON.stringify(newDbOrder)
     });
 
-    const newOrderUI = {
+    setOrderSuccess({
       id: refNumber,
       date: new Date().toLocaleString('ar-SA'),
       customer: { ...checkoutData },
       items: [...cart],
       total: cartTotal,
       status: 'جديد'
-    };
-
-    setOrders([newOrderUI, ...orders]);
-    setOrderSuccess(newOrderUI);
+    });
     setCart([]);
-    loadOrders();
+    loadData();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -624,12 +649,18 @@ export default function App() {
     }
   };
 
-  const updateProductStock = (id, inStock) => {
-    setProducts(prev => prev.map(p => p.id === id ? { ...p, inStock } : p));
+  const updateProductStock = async (id, inStock) => {
+    const updated = products.map(p => p.id === id ? { ...p, inStock } : p);
+    setProducts(updated);
+    await syncInventoryToCloud(updated);
+    showToast("تم حفظ حالة المخزون سحابياً بنجاح!");
   };
 
-  const updateProductPrice = (id, price) => {
-    setProducts(prev => prev.map(p => p.id === id ? { ...p, price: Number(price) } : p));
+  const updateProductPrice = async (id, price) => {
+    const numPrice = Number(price);
+    const updated = products.map(p => p.id === id ? { ...p, price: numPrice } : p);
+    setProducts(updated);
+    await syncInventoryToCloud(updated);
   };
 
   const updateOrderStatus = async (orderId, status) => {
@@ -1018,13 +1049,15 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
                 <div className="pt-4 border-t border-gray-100 flex items-center gap-3">
                   <button
                     onClick={() => buyNow(selectedProduct)}
-                    className="flex-1 py-3.5 bg-[#D4AF37] hover:bg-[#c29e2f] text-white font-bold rounded-2xl shadow-md transition-all text-sm flex items-center justify-center gap-2"
+                    disabled={!selectedProduct.inStock}
+                    className={`flex-1 py-3.5 font-bold rounded-2xl shadow-md transition-all text-sm flex items-center justify-center gap-2 ${selectedProduct.inStock ? 'bg-[#D4AF37] hover:bg-[#c29e2f] text-white' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
                   >
-                    <span>اطلبي الآن (الدفع عند الاستلام)</span>
+                    <span>{selectedProduct.inStock ? 'اطلبي الآن (الدفع عند الاستلام)' : 'المنتج نفد من المخزون'}</span>
                   </button>
                   <button
                     onClick={() => addToCart(selectedProduct)}
-                    className="px-5 py-3.5 bg-[#FDF4F5] hover:bg-[#C26D85] hover:text-white text-[#C26D85] font-bold rounded-2xl transition-all text-sm flex items-center justify-center gap-2 border border-[#F5E6E8]"
+                    disabled={!selectedProduct.inStock}
+                    className={`px-5 py-3.5 font-bold rounded-2xl transition-all text-sm flex items-center justify-center gap-2 border ${selectedProduct.inStock ? 'bg-[#FDF4F5] hover:bg-[#C26D85] hover:text-white text-[#C26D85] border-[#F5E6E8]' : 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'}`}
                   >
                     <ShoppingCart className="w-5 h-5"/>
                     <span className="hidden sm:inline">أضف للسلة</span>
@@ -1270,7 +1303,7 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
                 <div className="flex items-center justify-between bg-white p-6 rounded-3xl border border-[#F5E6E8] shadow-sm">
                   <div>
                     <h2 className="text-xl font-bold text-gray-900">لوحة تحكم المتجر (سحابية)</h2>
-                    <p className="text-xs text-gray-500 mt-0.5">الطلبات متزامنة لحظياً عبر قاعدة البيانات السحابية Supabase</p>
+                    <p className="text-xs text-gray-500 mt-0.5">المنتجات والطلبات متزامنة سحابياً ولحظياً عبر Supabase</p>
                   </div>
                   <button 
                     onClick={() => setIsAdminLoggedIn(false)}
