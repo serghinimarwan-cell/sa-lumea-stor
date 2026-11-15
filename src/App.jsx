@@ -524,7 +524,7 @@ export default function App() {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  // تحميل البيانات والمخزون المربوط بالاسم (بالتزامن مع Supabase)
+  // دالة التحميل مع دعم مطابقة المنتجات بالاسم أو بالـ ID لتفادي أي ضياع للبيانات
   const loadData = async () => {
     const dbOrders = await fetchFromSupabase('orders?select=*&order=created_at.desc');
     if (dbOrders && Array.isArray(dbOrders)) {
@@ -533,8 +533,7 @@ export default function App() {
         try {
           const savedMap = JSON.parse(configRecord.address);
           setProducts(prev => prev.map(p => {
-            // المطابقة بالاسم لتفادي ضياع المخزون عند تغير الـ IDs
-            const match = savedMap[p.name];
+            const match = savedMap[p.name] || savedMap[p.id] || savedMap[String(p.id)];
             if (match) {
               return {
                 ...p,
@@ -583,11 +582,12 @@ export default function App() {
     };
   }, []);
 
-  // مزامنة المخزون بالاسم سحابياً
+  // مزامنة المخزون بالاسم والـ ID معاً لضمان الاستقرار التام
   const syncInventoryToCloud = async (updatedProducts) => {
     const inventoryMap = {};
     updatedProducts.forEach(p => {
       inventoryMap[p.name] = { inStock: p.inStock, price: p.price };
+      inventoryMap[p.id] = { inStock: p.inStock, price: p.price };
     });
     const jsonString = JSON.stringify(inventoryMap);
 
@@ -1631,7 +1631,7 @@ ${order.items.map(i => `- ${i.name} (الكمية: ${i.quantity}) بسعر: ${i.
                   </div>
 
                   <button
-                    onClick={() => { setIsCartOpen(false); navigateTab('checkout'); }}
+                    onClick={() => { setIsCartOpen(false); navigateTo('checkout'); }}
                     className="w-full py-3.5 bg-[#C26D85] hover:bg-[#b05c73] text-white font-bold rounded-2xl shadow-md transition-all text-sm flex items-center justify-center gap-2"
                   >
                     <span>إتمام الطلب (الدفع عند الاستلام)</span>
